@@ -35,6 +35,14 @@ public class Homescreen {
         sidebar.maxHeightProperty().bind(scene.heightProperty());
         sidebar.setOrientation(Orientation.VERTICAL);
 
+        //load the logo image
+        Image logoImage = new Image(HelloApplication.class.getResource("images/logoBlack.png").toString());
+        ImageView logoView = new ImageView(logoImage);
+        logoView.setFitWidth(70);
+        logoView.setFitHeight(70);
+
+        sidebar.getChildren().addAll(logoView);
+
         return sidebar;
     }
 
