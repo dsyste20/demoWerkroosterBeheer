@@ -16,6 +16,7 @@ import java.sql.SQLException;
 
 public class SignIn extends Stage {
     private Database database;
+    private String userName;
 
     public SignIn(Stage owner, Database database) {
         this.database = database; //assigns the passed database instance to the local reference
@@ -35,24 +36,25 @@ public class SignIn extends Stage {
 
         Button signInButton = new Button("Inloggen");
         signInButton.setOnAction(event -> {
-            //retrieve user input
             String username = usernameField.getText();
             String password = passwordField.getText();
-
-            if (authenticate(username, password)) {
+            String name = authenticate(username, password);
+            if (name != null) {
+                this.userName = name; //set the userName field
                 System.out.println("Authentication successful");
-                //close the sign-in window
                 this.close();
-            } else {
-                System.out.println("Authentication failed");
 
-                // Display an authentication failed message to the user using an Alert
-                Alert alert = new Alert(AlertType.ERROR);
+                //proceed to show the main application window
+                Homescreen homescreen = new Homescreen(owner, name); //pass the retrieved name
+                owner.setScene(homescreen.getHomeScene());
+                owner.show();
+            } else {
+                //show authentication failed message
+                Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.initOwner(this);
                 alert.setTitle("Authentication Failed!");
                 alert.setHeaderText(null);
                 alert.setContentText("De gebruikersnaam of het wachtwoord is onjuist. Probeer het opnieuw!");
-
                 alert.showAndWait();
             }
         });
@@ -62,7 +64,10 @@ public class SignIn extends Stage {
         Scene scene = new Scene(signInForm, 300, 200); //set the size of the pop-up
         setScene(scene);
     }
-    private boolean authenticate(String username, String password) {
+    public String getUserName() {
+        return userName;
+    }
+    private String authenticate(String username, String password) {
         //SQL query to check for the user with the provided username and password
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
 
@@ -70,13 +75,15 @@ public class SignIn extends Stage {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             try (ResultSet resultSet = pstmt.executeQuery()) {
-                //if the result set is not empty, we have a match
-                return resultSet.next();
+                if (resultSet.next()) {
+                    //return the user's name if authentication is successful
+                    return resultSet.getString("name");
+                }
             }
         } catch (SQLException e) {
             System.err.println("Authentication query failed: " + e.getMessage());
-            return false;
         }
+        return null; //authentication failed
     }
 }
 

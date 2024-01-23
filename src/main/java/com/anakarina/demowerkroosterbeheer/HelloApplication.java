@@ -19,13 +19,18 @@ public class HelloApplication extends Application {
         SignIn signIn = new SignIn(stage, database);
         signIn.showAndWait();
 
+        if (signIn.getUserName() != null) {
+            //use the username from the SignIn dialog
+            Homescreen homescreen = new Homescreen(stage, signIn.getUserName());
+            stage.setScene(homescreen.getHomeScene());
+        } else {
+            stage.close();
+        }
+
         stage.setWidth(applicationSize[0]);
         stage.setHeight(applicationSize[1]);
         stage.setResizable(false);
         stage.setTitle("WerkroosterBeheer");
-
-        Homescreen homescreen = new Homescreen(stage);
-        stage.setScene(homescreen.getHomeScene());
         stage.show();
     }
     @Override

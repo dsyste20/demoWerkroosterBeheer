@@ -21,6 +21,11 @@
     -fx-fill: white;
 }
 
+#usernameLabel {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
 #buttonRoster {
     -fx-background-color: white;
     -fx-text-fill: black;
@@ -29,7 +34,7 @@
     -fx-border-radius: 20px;
     -fx-background-radius: 20px;
     -fx-effect: dropshadow( one-pass-box , grey , 8 , 0.0 , 2 , 0 );
-    -fx-cursor: hand; /* Change the cursor to hand when hovering over the buttons */
+    -fx-cursor: hand;
 }
 
 #buttonVakantie {
@@ -40,7 +45,7 @@
     -fx-border-radius: 20px;
     -fx-background-radius: 20px;
     -fx-effect: dropshadow( one-pass-box , grey , 8 , 0.0 , 2 , 0 );
-    -fx-cursor: hand; /* Change the cursor to hand when hovering over the buttons */
+    -fx-cursor: hand;
 }
 
 #rosterSpace {

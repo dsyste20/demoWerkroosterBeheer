@@ -18,8 +18,10 @@ import javafx.stage.Stage;
 
 public class Homescreen {
     private final Scene homeScene;
+    private final String loggedInUsername; //field to store the logged-in username
 
-    public Homescreen(Stage stage) {
+    public Homescreen(Stage stage, String name) {
+        this.loggedInUsername = name;
         //create an HBox as the main container to arrange sidebar and main content side by side
         HBox mainContainer = new HBox();
         homeScene = new Scene(mainContainer);
@@ -83,7 +85,7 @@ public class Homescreen {
 
         //create a container for the logo to add some space below it
         VBox logoContainer = new VBox(logoView);
-        logoContainer.setPadding(new Insets(0, 0, 80, 40)); // Space below the logo
+        logoContainer.setPadding(new Insets(0, 0, 80, 40)); //space below the logo
 
         //load the user icon
         Image userImage = new Image(HelloApplication.class.getResource("images/icons/user.png").toString(), 20, 20, true, true);
@@ -91,10 +93,20 @@ public class Homescreen {
         userIcon.setFitHeight(30);
         userIcon.setFitWidth(30);
 
-        //create a container for the user icon with padding at the bottom
-        VBox userIconContainer = new VBox(userIcon);
+        //create a label for the username
+        Label usernameLabel = new Label(loggedInUsername);
+        usernameLabel.setId("usernameLabel");
+        usernameLabel.setPadding(new Insets(5, 0, 0, 0));
+
+        //adjust the userIconContainer to hold both the icon and the username label
+        HBox userInfoContainer = new HBox(userIcon, usernameLabel);
+        userInfoContainer.setAlignment(Pos.CENTER_LEFT);
+        userInfoContainer.setSpacing(5); //space between icon and username
+
+        //adjust the padding for the userIconContainer to position it correctly
+        VBox userIconContainer = new VBox(userInfoContainer);
         userIconContainer.setAlignment(Pos.CENTER);
-        userIconContainer.setPadding(new Insets(360, 0, 0, 0)); // Bottom padding
+        userIconContainer.setPadding(new Insets(360, 0, 0, 0)); //bottom padding
 
         sidebar.getChildren().addAll(
                 logoContainer,
@@ -109,21 +121,21 @@ public class Homescreen {
         navItem.setPadding(new Insets(0, 0, 0, 20));
         navItem.setAlignment(Pos.CENTER_LEFT);
         navItem.setPrefSize(165, 35);
-        navItem.setHgap(10); // Adjust the gap between elements
+        navItem.setHgap(10); //adjust the gap between elements
 
         ImageView iconView = null;
         if ("Home".equals(title)) {
-            // Load the home icon and set it up
+            //load the home icon and set it up
             iconView = new ImageView(new Image(HelloApplication.class.getResource("images/icons/homeWhite.png").toString(), 20, 20, true, true));
         }
 
         Text navItemText = new Text(title);
 
         if (iconView != null) {
-            // Add the icon and the text to the nav item
+            //add the icon and the text to the nav item
             navItem.getChildren().addAll(iconView, navItemText);
         } else {
-            // If there's no icon, just add the text
+            //if there's no icon, just add the text
             navItem.getChildren().add(navItemText);
         }
 
