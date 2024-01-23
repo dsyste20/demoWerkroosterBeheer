@@ -1,6 +1,7 @@
 package com.anakarina.demowerkroosterbeheer;
 
 import com.anakarina.demowerkroosterbeheer.screens.Homescreen;
+import com.anakarina.demowerkroosterbeheer.screens.SignIn;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,6 +16,9 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) {
         database = new Database();
+        SignIn signIn = new SignIn(stage, database);
+        signIn.showAndWait();
+
         stage.setWidth(applicationSize[0]);
         stage.setHeight(applicationSize[1]);
         stage.setResizable(false);

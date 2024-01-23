@@ -30,10 +30,6 @@ public class Homescreen {
 
         //set spacing between sidebar and main content
         mainContainer.setSpacing(50);
-
-        // Show sign in dialog
-        SignIn signIn = new SignIn(stage);
-        signIn.showAndWait(); // This will show the sign in dialog and wait for it to close before moving on
     }
 
     /**
@@ -44,7 +40,6 @@ public class Homescreen {
         VBox mainContent = new VBox();
         mainContent.setSpacing(20); //space between the roster and the buttons
         mainContent.setPadding(new Insets(40, 0, 0, 0));
-
 
         //create the black area
         Pane rosterSpace = new Pane();
