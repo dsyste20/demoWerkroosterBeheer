@@ -5,10 +5,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -17,11 +19,47 @@ public class Homescreen {
     private final Scene homeScene;
 
     public Homescreen() {
-        Pane container = new Pane();
-        homeScene = new Scene(container);
+        //create an HBox as the main container to arrange sidebar and main content side by side
+        HBox mainContainer = new HBox();
+        homeScene = new Scene(mainContainer);
         homeScene.getStylesheets().add(HelloApplication.class.getResource("stylesheets/homescreen.css").toString());
 
-        container.getChildren().addAll(getSidebar(homeScene));
+        //add the sidebar and the main content to the HBox
+        mainContainer.getChildren().addAll(getSidebar(homeScene), getMainContent());
+
+        //set spacing between sidebar and main content
+        mainContainer.setSpacing(50);
+    }
+
+    /**
+     * This method returns a Pane that contains the main section of the home screen
+     * @return Pane
+     */
+    private Pane getMainContent() {
+        VBox mainContent = new VBox();
+        mainContent.setSpacing(20); //space between the roster and the buttons
+        mainContent.setPadding(new Insets(40, 0, 0, 0));
+
+
+        //create the black area
+        Pane rosterSpace = new Pane();
+        rosterSpace.setId("rosterSpace");
+        rosterSpace.setPrefSize(900, 500);
+
+        //create the buttons for generating roster and vacation requests
+        Button btnGenerateRoster = new Button("Rooster Genereren");
+        btnGenerateRoster.setId("buttonRoster");
+        Button btnVacationRequests = new Button("Vakantieaanvragen");
+        btnVacationRequests.setId("buttonVakantie");
+
+        //button container
+        HBox buttonContainer = new HBox(30, btnGenerateRoster, btnVacationRequests);
+        buttonContainer.setAlignment(Pos.CENTER);
+
+        //add the black area and button container to the main content VBox
+        mainContent.getChildren().addAll(rosterSpace, buttonContainer);
+
+        return mainContent;
     }
 
     /**
