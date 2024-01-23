@@ -1,24 +1,26 @@
 package com.anakarina.demowerkroosterbeheer;
 
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-public class MySQLConnection {
+
+public class Database {
     private Connection conn;
 
-    public MySQLConnection() {
-        String user = "root";
-        String passwd = "root";
-        String cString = "jdbc:mysql://localhost:8889/winkeldb?user=" + user + "&password=" + passwd;
+    public Database(){
+        //Developmentmode in XAMPP
+        String sUser = "root";
+        String sWachtwoord = "";
+        String sHost = "localhost";
+        String dbNaam = "werkrooster";
 
         try {
-            this.conn = DriverManager.getConnection(cString);
-        } catch (SQLException var5) {
-            System.out.println("Kan geen verbinding maken!");
+            //verbinding maken met de database
+//      Mac ->     this.conn = DriverManager.getConnection("jdbc:mysql://"+sHost+":8889/"+dbNaam, sUser, sWachtwoord);
+            this.conn = DriverManager.getConnection("jdbc:mysql://"+sHost+"/"+dbNaam, sUser, sWachtwoord);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
     }
 }
