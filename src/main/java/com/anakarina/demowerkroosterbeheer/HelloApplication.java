@@ -18,7 +18,8 @@ public class HelloApplication extends Application {
         stage.setResizable(false);
         stage.setTitle("WerkroosterBeheer");
 
-        stage.setScene(new Homescreen().getHomeScene());
+        Homescreen homescreen = new Homescreen(stage);
+        stage.setScene(homescreen.getHomeScene());
         stage.show();
     }
 

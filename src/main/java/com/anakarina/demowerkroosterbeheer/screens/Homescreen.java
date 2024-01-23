@@ -14,11 +14,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class Homescreen {
     private final Scene homeScene;
 
-    public Homescreen() {
+    public Homescreen(Stage stage) {
         //create an HBox as the main container to arrange sidebar and main content side by side
         HBox mainContainer = new HBox();
         homeScene = new Scene(mainContainer);
@@ -29,6 +30,10 @@ public class Homescreen {
 
         //set spacing between sidebar and main content
         mainContainer.setSpacing(50);
+
+        // Show sign in dialog
+        SignIn signIn = new SignIn(stage);
+        signIn.showAndWait(); // This will show the sign in dialog and wait for it to close before moving on
     }
 
     /**
