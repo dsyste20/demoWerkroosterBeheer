@@ -47,9 +47,21 @@ public class Homescreen {
         VBox logoContainer = new VBox(logoView);
         logoContainer.setPadding(new Insets(0, 0, 80, 40)); // Space below the logo
 
+        //load the user icon
+        Image userImage = new Image(HelloApplication.class.getResource("images/icons/user.png").toString(), 20, 20, true, true);
+        ImageView userIcon = new ImageView(userImage);
+        userIcon.setFitHeight(30);
+        userIcon.setFitWidth(30);
+
+        //create a container for the user icon with padding at the bottom
+        VBox userIconContainer = new VBox(userIcon);
+        userIconContainer.setAlignment(Pos.CENTER);
+        userIconContainer.setPadding(new Insets(360, 0, 0, 0)); // Bottom padding
+
         sidebar.getChildren().addAll(
                 logoContainer,
-                generateNavItem("Home", true));
+                generateNavItem("Home", true),
+                userIconContainer);
 
         return sidebar;
     }
