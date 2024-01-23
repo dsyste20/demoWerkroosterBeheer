@@ -1,6 +1,7 @@
 package com.anakarina.demowerkroosterbeheer.screens;
 
 import com.anakarina.demowerkroosterbeheer.Database;
+import com.anakarina.demowerkroosterbeheer.HelloApplication;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,16 +26,22 @@ public class SignIn extends Stage {
         setTitle("Sign In");
 
         VBox signInForm = new VBox(10);
+        signInForm.setId("signInForm");
         signInForm.setAlignment(Pos.CENTER);
         signInForm.setPadding(new Insets(10));
 
         Label usernameLabel = new Label("Gebruikersnaam:");
+        usernameLabel.setId("usernameLabel");
         TextField usernameField = new TextField();
+        usernameField.setId("usernameField");
 
         Label passwordLabel = new Label("Wachtwoord:");
+        passwordLabel.setId("passwordLabel");
         PasswordField passwordField = new PasswordField();
+        passwordField.setId("passwordField");
 
         Button signInButton = new Button("Inloggen");
+        signInButton.setId("button");
         signInButton.setOnAction(event -> {
             String username = usernameField.getText();
             String password = passwordField.getText();
@@ -62,6 +69,7 @@ public class SignIn extends Stage {
         signInForm.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, signInButton);
 
         Scene scene = new Scene(signInForm, 300, 200); //set the size of the pop-up
+        scene.getStylesheets().add(HelloApplication.class.getResource("stylesheets/signIn.css").toString());
         setScene(scene);
     }
     public String getUserName() {

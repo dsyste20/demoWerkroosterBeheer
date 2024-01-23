@@ -1,0 +1,11 @@
+#signInForm {
+    -fx-background-color: black;
+}
+
+#usernameLabel, #passwordLabel {
+    -fx-text-fill: green;
+}
+
+#button {
+    -fx-text-fill: green;
+}
