@@ -10,9 +10,11 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
     public static int[] applicationSize = {1200, 650};
+    private Database database;
 
     @Override
     public void start(Stage stage) {
+        database = new Database();
         stage.setWidth(applicationSize[0]);
         stage.setHeight(applicationSize[1]);
         stage.setResizable(false);
@@ -21,6 +23,13 @@ public class HelloApplication extends Application {
         Homescreen homescreen = new Homescreen(stage);
         stage.setScene(homescreen.getHomeScene());
         stage.show();
+    }
+    @Override
+    public void stop() {
+        //close the database connection when the application is stopped
+        if (database != null) {
+            database.closeConnection();
+        }
     }
 
     public static void main(String[] args) {

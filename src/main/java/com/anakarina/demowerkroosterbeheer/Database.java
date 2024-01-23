@@ -8,19 +8,37 @@ import java.sql.Statement;
 public class Database {
     private Connection conn;
 
-    public Database(){
-        //Developmentmode in XAMPP
+    public Database() {
+        //development mode in XAMPP
         String sUser = "root";
         String sWachtwoord = "";
         String sHost = "localhost";
         String dbNaam = "werkrooster";
 
         try {
-            //verbinding maken met de database
-//      Mac ->     this.conn = DriverManager.getConnection("jdbc:mysql://"+sHost+":8889/"+dbNaam, sUser, sWachtwoord);
+            //connect to the database
             this.conn = DriverManager.getConnection("jdbc:mysql://"+sHost+"/"+dbNaam, sUser, sWachtwoord);
+            System.out.println("Connected to the database successfully.");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Database connection failed: " + e.getMessage());
+            // NOTE: maybe later to retry or exit the application here
+        }
+    }
+
+    //retrieve the connection
+    public Connection getConnection() {
+        return conn;
+    }
+
+    //close the connection when the application stops
+    public void closeConnection() {
+        if (conn != null) {
+            try {
+                conn.close();
+                System.out.println("Database connection closed.");
+            } catch (SQLException e) {
+                System.err.println("Failed to close the database connection: " + e.getMessage());
+            }
         }
     }
 }
