@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 public class Homescreen {
     private final Scene homeScene;
@@ -41,9 +43,47 @@ public class Homescreen {
         logoView.setFitWidth(70);
         logoView.setFitHeight(70);
 
-        sidebar.getChildren().addAll(logoView);
+        //create a container for the logo to add some space below it
+        VBox logoContainer = new VBox(logoView);
+        logoContainer.setPadding(new Insets(0, 0, 80, 40)); // Space below the logo
+
+        sidebar.getChildren().addAll(
+                logoContainer,
+                generateNavItem("Home", true));
 
         return sidebar;
+    }
+
+    private FlowPane generateNavItem(String title, boolean active) {
+        FlowPane navItem = new FlowPane();
+        navItem.setPadding(new Insets(0, 0, 0, 20));
+        navItem.setAlignment(Pos.CENTER_LEFT);
+        navItem.setPrefSize(165, 35);
+        navItem.setHgap(10); // Adjust the gap between elements
+
+        ImageView iconView = null;
+        if ("Home".equals(title)) {
+            // Load the home icon and set it up
+            iconView = new ImageView(new Image(HelloApplication.class.getResource("images/icons/homeWhite.png").toString(), 20, 20, true, true));
+        }
+
+        Text navItemText = new Text(title);
+
+        if (iconView != null) {
+            // Add the icon and the text to the nav item
+            navItem.getChildren().addAll(iconView, navItemText);
+        } else {
+            // If there's no icon, just add the text
+            navItem.getChildren().add(navItemText);
+        }
+
+        if (active) {
+            navItem.setId("navItem-active");
+        } else {
+            navItem.setId("navItem");
+        }
+
+        return navItem;
     }
 
     public Scene getHomeScene() {return homeScene;}
