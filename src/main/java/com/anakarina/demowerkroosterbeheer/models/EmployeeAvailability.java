@@ -5,23 +5,29 @@ import java.util.Map;
 
 public class EmployeeAvailability {
     private String employeeId;
-    private Map<String, String[]> availabilityMap;
+    private String afdeling;
+    private Map<String, String> availabilityMap;
 
-    public EmployeeAvailability(String employeeId) {
+    public EmployeeAvailability(String employeeId, String afdeling) {
         this.employeeId = employeeId;
+        this.afdeling = afdeling;
         this.availabilityMap = new HashMap<>();
     }
 
-    public void setAvailabilityForDay(String day, String startTime, String endTime) {
-        availabilityMap.put(day, new String[]{startTime, endTime});
+    public void setAvailability(String day, String availability) {
+        availabilityMap.put(day, availability);
     }
 
-    // Getter and other methods...
+    // Getter methods...
     public String getEmployeeId() {
         return employeeId;
     }
 
-    public Map<String, String[]> getAvailabilityMap() {
+    public String getAfdeling() {
+        return afdeling;
+    }
+
+    public Map<String, String> getAvailabilityMap() {
         return availabilityMap;
     }
 }

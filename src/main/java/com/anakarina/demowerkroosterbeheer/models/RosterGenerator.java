@@ -1,7 +1,6 @@
 package com.anakarina.demowerkroosterbeheer.models;
 
 import com.anakarina.demowerkroosterbeheer.Database;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,20 +24,17 @@ public class RosterGenerator {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                //table columns
-                String employeeId = resultSet.getString("id");
-                String day = resultSet.getString("medewerkerID");
-                String afdeling = resultSet.getString("addeling");
-                String maandag = resultSet.getString("maandag");
-                String dinsdag = resultSet.getString("dinsdag");
-                String woensdag = resultSet.getString("woensdag");
-                String donderdag = resultSet.getString("donderdag");
-                String vrijdag = resultSet.getString("vrijdag");
-                String zaterdag = resultSet.getString("zaterdag");
+                String employeeId = resultSet.getString("medewerkerID");
+                String afdeling = resultSet.getString("afdeling");
+                EmployeeAvailability availability = new EmployeeAvailability(employeeId, afdeling);
 
-                //create an EmployeeAvailability object for each record
-                EmployeeAvailability availability = new EmployeeAvailability(employeeId);
-                availability.setAvailabilityForDay(day, startTime, endTime);
+                availability.setAvailability("maandag", resultSet.getString("maandag"));
+                availability.setAvailability("dinsdag", resultSet.getString("dinsdag"));
+                availability.setAvailability("woensdag", resultSet.getString("woensdag"));
+                availability.setAvailability("donderdag", resultSet.getString("donderdag"));
+                availability.setAvailability("vrijdag", resultSet.getString("vrijdag"));
+                availability.setAvailability("zaterdag", resultSet.getString("zaterdag"));
+
                 availabilities.add(availability);
             }
         } catch (SQLException e) {
