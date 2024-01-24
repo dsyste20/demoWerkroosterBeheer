@@ -25,24 +25,27 @@ public class RosterGenerator {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                // Assuming the table has columns like 'employee_id', 'day', 'start_time', 'end_time'
-                String employeeId = resultSet.getString("employee_id");
-                String day = resultSet.getString("day");
-                String startTime = resultSet.getString("start_time");
-                String endTime = resultSet.getString("end_time");
+                //table columns
+                String employeeId = resultSet.getString("id");
+                String day = resultSet.getString("medewerkerID");
+                String afdeling = resultSet.getString("addeling");
+                String maandag = resultSet.getString("maandag");
+                String dinsdag = resultSet.getString("dinsdag");
+                String woensdag = resultSet.getString("woensdag");
+                String donderdag = resultSet.getString("donderdag");
+                String vrijdag = resultSet.getString("vrijdag");
+                String zaterdag = resultSet.getString("zaterdag");
 
-                // Create an EmployeeAvailability object for each record
+                //create an EmployeeAvailability object for each record
                 EmployeeAvailability availability = new EmployeeAvailability(employeeId);
                 availability.setAvailabilityForDay(day, startTime, endTime);
                 availabilities.add(availability);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exceptions
         }
 
         return availabilities;
     }
 
-    // Other methods will be added later...
 }
