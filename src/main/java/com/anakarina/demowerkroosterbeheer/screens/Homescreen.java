@@ -1,12 +1,15 @@
 package com.anakarina.demowerkroosterbeheer.screens;
 
+import com.anakarina.demowerkroosterbeheer.Database;
+import com.anakarina.demowerkroosterbeheer.Employee;
 import com.anakarina.demowerkroosterbeheer.HelloApplication;
+import com.anakarina.demowerkroosterbeheer.models.RosterGenerator;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -15,14 +18,20 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 public class Homescreen {
     private final Scene homeScene;
-    private final String loggedInUsername; //field to store the logged-in username
+    private Database database;
+    private final String loggedInUsername;
+    private Pane rosterSpace;
 
-    public Homescreen(Stage stage, String name) {
+    public Homescreen(Stage stage, String name, Database database) {
         this.loggedInUsername = name;
-        //create an HBox as the main container to arrange sidebar and main content side by side
+        this.database = database;
+        //an HBox as the main container to arrange sidebar and main content side by side
         HBox mainContainer = new HBox();
         homeScene = new Scene(mainContainer);
         homeScene.getStylesheets().add(HelloApplication.class.getResource("stylesheets/homescreen.css").toString());
@@ -32,6 +41,7 @@ public class Homescreen {
 
         //set spacing between sidebar and main content
         mainContainer.setSpacing(50);
+
     }
 
     /**
@@ -43,14 +53,19 @@ public class Homescreen {
         mainContent.setSpacing(20); //space between the roster and the buttons
         mainContent.setPadding(new Insets(40, 0, 0, 0));
 
-        //create the black area
-        Pane rosterSpace = new Pane();
+        //create the main area
+        rosterSpace = new Pane(); //assign the Pane to the class member
         rosterSpace.setId("rosterSpace");
         rosterSpace.setPrefSize(900, 500);
 
         //create the buttons for generating roster and vacation requests
         Button btnGenerateRoster = new Button("Rooster Genereren");
         btnGenerateRoster.setId("buttonRoster");
+        btnGenerateRoster.setOnAction(event -> {
+            generateRoster(database);
+        });
+
+
         Button btnVacationRequests = new Button("Vakantieaanvragen");
         btnVacationRequests.setId("buttonVakantie");
 
@@ -62,6 +77,97 @@ public class Homescreen {
         mainContent.getChildren().addAll(rosterSpace, buttonContainer);
 
         return mainContent;
+    }
+
+    //method to generate and display the roster table
+    private void generateRoster(Database database) {
+        try {
+            //create a new instance of RosterGenerator every time we generate the roster
+            RosterGenerator rosterGenerator = new RosterGenerator(database);
+
+            //generate the roster
+            Map<String, List<Employee>> roster = rosterGenerator.generateAndDisplayRoster();
+
+            //display the roster
+            displayRosterTable(roster);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void displayRosterTable(Map<String, List<Employee>> finalRoster) {
+        rosterSpace.getChildren().clear();
+
+        //create a TableView for the roster
+        TableView<Employee> rosterTableView = new TableView<>();
+        rosterTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Employee, String> rolCol = new TableColumn<>("Rol");
+        rolCol.setCellValueFactory(new PropertyValueFactory<>("rol"));
+
+        TableColumn<Employee, String> nameCol = new TableColumn<>("Naam");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("fullname"));
+
+        TableColumn<Employee, String> shiftCol = new TableColumn<>("Dienst");
+        shiftCol.setCellValueFactory(new PropertyValueFactory<>("shift"));
+
+        TableColumn<Employee, String> koffietCol = new TableColumn<>("Koffie");
+        koffietCol.setCellValueFactory(new PropertyValueFactory<>("koffie"));
+
+        TableColumn<Employee, String> lunhCol = new TableColumn<>("Lunch");
+        lunhCol.setCellValueFactory(new PropertyValueFactory<>("lunch"));
+
+        TableColumn<Employee, String> dinnerCol = new TableColumn<>("Dinner");
+        dinnerCol.setCellValueFactory(new PropertyValueFactory<>("dinner"));
+
+        rosterTableView.getColumns().addAll(rolCol, nameCol, shiftCol, koffietCol, lunhCol, dinnerCol);
+
+        //fill the roster TableView with data
+        for (Map.Entry<String, List<Employee>> entry : finalRoster.entrySet()) {
+            List<Employee> employeesForDay = entry.getValue();
+            for (Employee emp : employeesForDay) {
+
+                rosterTableView.getItems().add(emp);
+            }
+        }
+
+        //create another TableView for all employees with their availability
+        TableView<Employee> allEmployeesTableView = new TableView<>();
+        allEmployeesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Employee, String> nameColumn = new TableColumn<>("Naam");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("fullname"));
+
+        TableColumn<Employee, String> mondayColumn = new TableColumn<>("Maandag");
+        mondayColumn.setCellValueFactory(new PropertyValueFactory<>("maandag"));
+
+        TableColumn<Employee, String> tuesdayColumn = new TableColumn<>("Dinsdag");
+        tuesdayColumn.setCellValueFactory(new PropertyValueFactory<>("dinsdag"));
+
+        TableColumn<Employee, String> wednesdayColumn = new TableColumn<>("Woensdag");
+        wednesdayColumn.setCellValueFactory(new PropertyValueFactory<>("woensdag"));
+
+        TableColumn<Employee, String> thursdayColumn = new TableColumn<>("Donderdag");
+        thursdayColumn.setCellValueFactory(new PropertyValueFactory<>("donderdag"));
+
+        TableColumn<Employee, String> fridayColumn = new TableColumn<>("Vrijdag");
+        fridayColumn.setCellValueFactory(new PropertyValueFactory<>("vrijdag"));
+
+        TableColumn<Employee, String> saturdayColumn = new TableColumn<>("Zaterdag");
+        saturdayColumn.setCellValueFactory(new PropertyValueFactory<>("zaterdag"));
+
+        allEmployeesTableView.getColumns().addAll(nameColumn, mondayColumn, tuesdayColumn, wednesdayColumn, thursdayColumn, fridayColumn, saturdayColumn);
+
+        //fetch all employees with their availability
+        RosterGenerator rosterGenerator = new RosterGenerator(database);
+        List<Employee> allEmployees = rosterGenerator.fetchEmployees();
+        allEmployeesTableView.getItems().addAll(allEmployees);
+
+        //layout to hold both the roster table and the all employees table
+        HBox layout = new HBox(10);
+        layout.getChildren().addAll(rosterTableView, allEmployeesTableView);
+
+        rosterSpace.getChildren().add(layout); //add the HBox to the rosterSpace
     }
 
     /**

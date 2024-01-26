@@ -3,14 +3,10 @@ package com.anakarina.demowerkroosterbeheer;
 import com.anakarina.demowerkroosterbeheer.screens.Homescreen;
 import com.anakarina.demowerkroosterbeheer.screens.SignIn;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class HelloApplication extends Application {
-    public static int[] applicationSize = {1200, 650};
+    public static int[] applicationSize = {1400, 650};
     private Database database;
 
     @Override
@@ -21,7 +17,7 @@ public class HelloApplication extends Application {
 
         if (signIn.getUserName() != null) {
             //use the username from the SignIn dialog
-            Homescreen homescreen = new Homescreen(stage, signIn.getUserName());
+            Homescreen homescreen = new Homescreen(stage, signIn.getUserName(), database);
             stage.setScene(homescreen.getHomeScene());
         } else {
             stage.close();
@@ -33,13 +29,13 @@ public class HelloApplication extends Application {
         stage.setTitle("WerkroosterBeheer");
         stage.show();
     }
-    @Override
-    public void stop() {
-        //close the database connection when the application is stopped
-        if (database != null) {
-            database.closeConnection();
-        }
-    }
+//    @Override
+//    public void stop() {
+//        //close the database connection when the application is stopped
+//        if (database != null) {
+//            database.closeConnection();
+//        }
+//    }
 
     public static void main(String[] args) {
         launch();

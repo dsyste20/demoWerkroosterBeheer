@@ -52,7 +52,7 @@ public class SignIn extends Stage {
                 this.close();
 
                 //proceed to show the main application window
-                Homescreen homescreen = new Homescreen(owner, name); //pass the retrieved name
+                Homescreen homescreen = new Homescreen(owner, name, database); //pass the retrieved name
                 owner.setScene(homescreen.getHomeScene());
                 owner.show();
             } else {
