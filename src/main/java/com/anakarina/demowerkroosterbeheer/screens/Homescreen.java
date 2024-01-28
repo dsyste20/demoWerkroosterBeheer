@@ -84,7 +84,7 @@ public class Homescreen {
         Button btnVacationRequests = new Button("Vakantieaanvragen");
         btnVacationRequests.setId("buttonVakantie");
         btnVacationRequests.setOnAction(event -> {
-            VacationRequest vacationRequest = new VacationRequest();
+            VacationRequest vacationRequest = new VacationRequest(database);
             vacationRequest.show();
         });
 
