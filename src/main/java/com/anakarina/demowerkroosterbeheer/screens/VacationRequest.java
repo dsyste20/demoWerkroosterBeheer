@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
 
 public class VacationRequest {
     private Stage stage;
@@ -29,7 +30,6 @@ public class VacationRequest {
         VBox layout = createVacationRequestLayout();
         Scene vacationScene = new Scene(layout, 1000, 800);
         vacationScene.getStylesheets().add(HelloApplication.class.getResource("stylesheets/vacationRequest.css").toString());
-        stage.setTitle("Vakantieaanvraag");
         stage.setScene(vacationScene);
     }
 
@@ -38,16 +38,18 @@ public class VacationRequest {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
 
-        // Koprij met vaste breedtes voor elke kolom
-        HBox headerRow = createHeaderRow();
-        layout.getChildren().add(headerRow);
+        //label boven de lijst met vakantieaanvragen
+        Label titleLabel = new Label("Vakantieaanvragen");
+        titleLabel.setStyle("-fx-font-size: 20px;");
 
-        // Horizontale lijn na de koptekst
-        layout.getChildren().add(new Separator());
+        //koprij
+        HBox headerRow = createHeaderRow();
+
+        layout.getChildren().addAll(titleLabel, headerRow, new Separator());
 
         try {
             Connection conn = database.getConnection();
-            String sql = "SELECT v.id, v.medewerkerID, m.firstname, m.lastname, v.aanvraag, v.status, v.aanvraagDatum " +
+            String sql = "SELECT v.id, v.medewerkerID, m.firstname, m.lastname, v.aanvraag, v.status, v.aanvraagDatum, v.eindDatum " +
                     "FROM vakantieaanvragen v " +
                     "JOIN medewerker m ON v.medewerkerID = m.id " +
                     "ORDER BY v.aanvraagDatum";
@@ -147,9 +149,7 @@ public class VacationRequest {
             Label statusLabel = (Label) requestRow.getChildren().get(3);
             statusLabel.setText(status);
 
-            Button approveButton = (Button) requestRow.getChildren().get(4);
-            Button denyButton = (Button) requestRow.getChildren().get(5);
-            requestRow.getChildren().removeAll(approveButton, denyButton);
+            requestRow.getChildren().removeIf(node -> node instanceof Button);
         }
     }
 
