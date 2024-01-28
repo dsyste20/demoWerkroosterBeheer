@@ -1,5 +1,9 @@
 package com.anakarina.demowerkroosterbeheer;
 
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Employee {
     private String id;
     private String firstname;
@@ -112,6 +116,44 @@ public class Employee {
 
     public String getFullname() {
         return firstname + " " + lastname;
+    }
+
+    public boolean isAvailableOn(String day) {
+        //verkrijg de beschikbaarheid voor de opgegeven dag
+        String availability = getAvailabilityTimes().get(day);
+        return availability != null && !availability.equalsIgnoreCase("x");
+    }
+
+    //methode om te controleren of de medewerker beschikbaar is voor een gegeven tijdslot.
+    public boolean isAvailableForShift(String shiftTime) {
+        String[] parts = shiftTime.split(" - ");
+        LocalTime shiftStart = LocalTime.parse(parts[0]);
+        LocalTime shiftEnd = LocalTime.parse(parts[1]);
+
+        for (String availableTime : this.getAvailabilityTimes().values()) {
+            String[] availableParts = availableTime.split(" - ");
+            LocalTime availableStart = LocalTime.parse(availableParts[0]);
+            LocalTime availableEnd = LocalTime.parse(availableParts[1]);
+
+            if (!shiftStart.isBefore(availableStart) && !shiftEnd.isAfter(availableEnd)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //methode die de beschikbaarheidstijden als een Map teruggeeft
+    public Map<String, String> getAvailabilityTimes() {
+        Map<String, String> availability = new HashMap<>();
+        availability.put("maandag", this.getMaandag());
+        availability.put("dinsdag", this.getDinsdag());
+        availability.put("woensdag", this.getWoensdag());
+        availability.put("donderdag", this.getDonderdag());
+        availability.put("vrijdag", this.getVrijdag());
+        availability.put("zaterdag", this.getZaterdag());
+
+        return availability;
     }
 
 }

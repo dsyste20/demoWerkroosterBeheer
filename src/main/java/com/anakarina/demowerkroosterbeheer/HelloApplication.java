@@ -6,7 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class HelloApplication extends Application {
-    public static int[] applicationSize = {1400, 650};
+    public static int[] applicationSize = {1400, 750};
     private Database database;
 
     @Override

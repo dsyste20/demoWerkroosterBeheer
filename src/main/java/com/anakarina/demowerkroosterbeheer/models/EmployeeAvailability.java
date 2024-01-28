@@ -59,15 +59,32 @@ public class EmployeeAvailability {
     public boolean includesTimeRange(String startTime, String endTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         try {
+            //trim de tijden om zeker te zijn dat er geen overtollige spaties zijn
+            startTime = startTime.trim();
+            endTime = endTime.trim();
+
+            //parse de tijden van de shift
             LocalTime shiftStart = LocalTime.parse(startTime, formatter);
             LocalTime shiftEnd = LocalTime.parse(endTime, formatter);
 
-            String[] times = timeSlot.split("-");
-            LocalTime availableStart = LocalTime.parse(times[0], formatter);
-            LocalTime availableEnd = LocalTime.parse(times[1], formatter);
+            //controleer of 'x' of andere niet-tijdsnotaties worden gebruikt
+            if (timeSlot.equalsIgnoreCase("x")) {
+                return false;
+            }
 
-            return (!availableStart.isAfter(shiftStart) && !availableEnd.isBefore(shiftEnd));
-        } catch (DateTimeParseException | ArrayIndexOutOfBoundsException e) {
+            //trim ook de beschikbaarheidstijden en controleer of er twee tijden zijn
+            String[] times = timeSlot.trim().split("-");
+            if (times.length < 2) {
+                //niet genoeg informatie om een tijdslot te parsen
+                return false;
+            }
+
+            LocalTime availableStart = LocalTime.parse(times[0].trim(), formatter);
+            LocalTime availableEnd = LocalTime.parse(times[1].trim(), formatter);
+
+            //check of de shift binnen de beschikbaarheidstijden valt
+            return !availableStart.isAfter(shiftStart) && !availableEnd.isBefore(shiftEnd);
+        } catch (DateTimeParseException e) {
             System.err.println("Error parsing timeSlot in EmployeeAvailability: " + e.getMessage());
             return false;
         }

@@ -17,17 +17,34 @@ public class RosterGenerator {
     }
 
     public Map<String, List<Employee>> generateAndDisplayRoster() throws SQLException {
-        List<Employee> employees = fetchEmployees();
+        //ophalen van alle medewerkers en hun beschikbaarheid
+        List<Employee> allEmployees = fetchEmployees();
         Map<String, List<EmployeeAvailability>> availabilitiesByDay = fetchAvailabilitiesGroupedByDay();
+
         Map<String, List<Employee>> finalRoster = new HashMap<>();
 
+        //voor elke dag medewerkers selecteren voor de benodigde shifts
         for (String day : availabilitiesByDay.keySet()) {
-            //passing the list of all employees to the method
-            List<Employee> selectedEmployees = selectEmployeesForDay(availabilitiesByDay.get(day), employees);
-            finalRoster.put(day, selectedEmployees);
+            List<EmployeeAvailability> todaysAvailabilities = availabilitiesByDay.get(day);
+
+            //de tijden voor elke dienst
+            List<Employee> morningShift = selectEmployeesForShift(todaysAvailabilities, allEmployees, "07:00", "17:00", 4);
+            List<Employee> afternoonShift = selectEmployeesForShift(todaysAvailabilities, allEmployees, "12:00", "17:00", 1);
+            List<Employee> eveningShift = selectEmployeesForShift(todaysAvailabilities, allEmployees, "17:00", "21:30", 3);
+
+            //combineer alle shifts voor de dag in een lijst
+            List<Employee> employeesForDay = new ArrayList<>();
+            employeesForDay.addAll(morningShift);
+            employeesForDay.addAll(afternoonShift);
+            employeesForDay.addAll(eveningShift);
+
+            //voeg de lijst van medewerkers voor de dag toe aan het finale rooster
+            finalRoster.put(day, employeesForDay);
         }
 
+        //rooster weergeven
         displayRoster(finalRoster);
+
         return finalRoster;
     }
 
@@ -96,21 +113,33 @@ public class RosterGenerator {
         return availabilitiesByDay;
     }
 
-    private List<Employee> selectEmployeesForDay(List<EmployeeAvailability> availabilities, List<Employee> allEmployees) {
-        //we need 4 employees for the 07:00 - 17:00 shift,
-        //3 for the 17:00 - 21:30 shift, and 1 for the 12:00 - 17:00 shift.
-        List<Employee> selectedEmployees = new ArrayList<>();
+    private List<Employee> selectEmployeesForDay(Map<String, List<EmployeeAvailability>> availabilitiesByDay, List<Employee> allEmployees, String day) {
+        List<EmployeeAvailability> todaysAvailabilities = availabilitiesByDay.get(day);
+        Set<String> selectedEmployeeIds = new HashSet<>();
+        List<Employee> selectedEmployeesForDay = new ArrayList<>();
 
-        //select employees for each shift based on availability
-        selectedEmployees.addAll(selectEmployeesForShift(availabilities, allEmployees, "07:00", "17:00", 4));
-        selectedEmployees.addAll(selectEmployeesForShift(availabilities, allEmployees, "17:00", "21:30", 3));
-        selectedEmployees.addAll(selectEmployeesForShift(availabilities, allEmployees, "12:00", "17:00", 1));
+        while (selectedEmployeesForDay.size() < 8) {
+            Collections.shuffle(todaysAvailabilities); // Shuffle om willekeurigheid te garanderen
 
-        return selectedEmployees;
+            for (EmployeeAvailability availability : todaysAvailabilities) {
+                if (selectedEmployeeIds.size() >= 8) break; // Stop als we genoeg medewerkers hebben
+
+                if (isEmployeeAvailable(availability, "07:00", "21:30") && !selectedEmployeeIds.contains(availability.getEmployeeId())) {
+                    Employee employee = findEmployeeById(allEmployees, availability.getEmployeeId());
+                    if (employee != null) {
+                        selectedEmployeesForDay.add(employee);
+                        selectedEmployeeIds.add(employee.getId());
+                    }
+                }
+            }
+        }
+        return selectedEmployeesForDay;
     }
 
     private List<Employee> selectEmployeesForShift(List<EmployeeAvailability> availabilities, List<Employee> allEmployees, String startTime, String endTime, int needed) {
         List<Employee> selectedForShift = new ArrayList<>();
+        Collections.shuffle(availabilities); // Shuffle de lijst om willekeurigheid te garanderen
+
         for (EmployeeAvailability availability : availabilities) {
             if (isEmployeeAvailable(availability, startTime, endTime) && selectedForShift.size() < needed) {
                 Employee employee = findEmployeeById(allEmployees, availability.getEmployeeId());
@@ -144,14 +173,14 @@ public class RosterGenerator {
 
             System.out.println(day.toUpperCase() + ":");
 
-            //order of employees in the list matches the shifts
-            String[] shifts = {"", "Kassa 1", "Kassa 2", "Kassa 3", "Sco 1", "Sco 2", "Counter 1", "Counter 2", "Bestellingen"};
-            int shiftIndex = 0;
+//            //order of employees in the list matches the shifts
+//            String[] shifts = {"", "Kassa 1", "Kassa 2", "Kassa 3", "Sco 1", "Sco 2", "Counter 1", "Counter 2", "Bestellingen"};
+//            int shiftIndex = 0;
 
+            //print alleen de namen van de geselecteerde medewerkers voor de dag
+            System.out.println(day.toUpperCase() + ":");
             for (Employee employee : employeesForDay) {
-                //output the shift and employee name
-                System.out.printf("%-12s: %s %s\n", shifts[shiftIndex], employee.getFirstname(), employee.getLastname());
-                shiftIndex++;
+                System.out.println(employee.getFullname());
             }
 
             //print a separator for readability
@@ -159,17 +188,18 @@ public class RosterGenerator {
         }
     }
 
-    public List<Employee> generateEmployeesWithRoles() {
-        List<Employee> employees = fetchEmployees();
-        String[] roles = {"Kassa 1", "Kassa 2", "Kassa 3", "Sco 1", "Sco 2", "Counter 1", "Counter 2", "Bestellingen"};
-        int index = 0;
-
-        for (Employee employee : employees) {
-            //assign roles in order, looping back to the start if we run out of roles
-            employee.setRol(roles[index % roles.length]);
-            index++;
-        }
-
-        return employees;
-    }
+//    public List<Employee> generateEmployeesWithRoles(List<Employee> employees) {
+//        String[] roles = {"Kassa 1", "Kassa 2", "Kassa 3", "Sco 1", "Sco 2", "Counter 1", "Counter 2", "Bestellingen"};
+//        int index = 0;
+//
+//        for (Employee employee : employees) {
+//            //wijst elke werknemer een unieke rol toe uit de rollenlijst
+//            if (index < roles.length) {
+//                employee.setRol(roles[index]);
+//                index++;
+//            }
+//        }
+//
+//        return employees;
+//    }
 }
