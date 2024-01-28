@@ -323,24 +323,31 @@ public class Homescreen {
 
         TableColumn<Employee, String> nameColumn = new TableColumn<>("Naam");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("fullname"));
+        nameColumn.setMinWidth(150);
 
         TableColumn<Employee, String> mondayColumn = new TableColumn<>("Maandag");
         mondayColumn.setCellValueFactory(new PropertyValueFactory<>("maandag"));
+        mondayColumn.setMinWidth(100);
 
         TableColumn<Employee, String> tuesdayColumn = new TableColumn<>("Dinsdag");
         tuesdayColumn.setCellValueFactory(new PropertyValueFactory<>("dinsdag"));
+        tuesdayColumn.setMinWidth(100);
 
         TableColumn<Employee, String> wednesdayColumn = new TableColumn<>("Woensdag");
         wednesdayColumn.setCellValueFactory(new PropertyValueFactory<>("woensdag"));
+        wednesdayColumn.setMinWidth(100);
 
         TableColumn<Employee, String> thursdayColumn = new TableColumn<>("Donderdag");
         thursdayColumn.setCellValueFactory(new PropertyValueFactory<>("donderdag"));
+        thursdayColumn.setMinWidth(100);
 
         TableColumn<Employee, String> fridayColumn = new TableColumn<>("Vrijdag");
         fridayColumn.setCellValueFactory(new PropertyValueFactory<>("vrijdag"));
+        fridayColumn.setMinWidth(100);
 
         TableColumn<Employee, String> saturdayColumn = new TableColumn<>("Zaterdag");
         saturdayColumn.setCellValueFactory(new PropertyValueFactory<>("zaterdag"));
+        saturdayColumn.setMinWidth(100);
 
         allEmployeesTableView.getColumns().addAll(nameColumn, mondayColumn, tuesdayColumn, wednesdayColumn, thursdayColumn, fridayColumn, saturdayColumn);
 
