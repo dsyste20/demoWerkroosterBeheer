@@ -26,7 +26,7 @@ public class RosterGenerator {
 
         Map<String, List<Employee>> finalRoster = new HashMap<>();
 
-        // Specifieke diensttijden
+        //specifieke diensttijden
         String[] desiredShifts = {
                 "07:00 - 17:00",
                 "07:00 - 17:00",
@@ -38,7 +38,7 @@ public class RosterGenerator {
                 "12:00 - 17:00"
         };
 
-        // Voor elke dag medewerkers selecteren voor de specifieke diensttijden
+        //voor elke dag medewerkers selecteren voor de specifieke diensttijden
         for (String day : daysOfWeek) {
             List<EmployeeAvailability> todaysAvailabilities = availabilitiesByDay.get(day);
 
@@ -63,7 +63,7 @@ public class RosterGenerator {
         String startTime = times[0];
         String endTime = times[1];
 
-        Collections.shuffle(availabilities); // Shuffle de beschikbaarheden
+        Collections.shuffle(availabilities); //shuffle de beschikbaarheden
 
         for (EmployeeAvailability availability : availabilities) {
             if (availability.includesTimeRange(startTime, endTime) && !usedEmployeeIds.contains(availability.getEmployeeId())) {
@@ -74,7 +74,7 @@ public class RosterGenerator {
                 }
             }
         }
-        return new Employee(); // Geen geschikte medewerker gevonden
+        return new Employee();
     }
 
     public List<Employee> fetchEmployees() {
@@ -148,10 +148,10 @@ public class RosterGenerator {
         List<Employee> selectedEmployeesForDay = new ArrayList<>();
 
         while (selectedEmployeesForDay.size() < 8) {
-            Collections.shuffle(todaysAvailabilities); // Shuffle om willekeurigheid te garanderen
+            Collections.shuffle(todaysAvailabilities); //shuffle om willekeurigheid te garanderen
 
             for (EmployeeAvailability availability : todaysAvailabilities) {
-                if (selectedEmployeeIds.size() >= 8) break; // Stop als we genoeg medewerkers hebben
+                if (selectedEmployeeIds.size() >= 8) break; //stop als we genoeg medewerkers hebben
 
                 if (isEmployeeAvailable(availability, "07:00", "21:30") && !selectedEmployeeIds.contains(availability.getEmployeeId())) {
                     Employee employee = findEmployeeById(allEmployees, availability.getEmployeeId());
@@ -167,7 +167,7 @@ public class RosterGenerator {
 
     private List<Employee> selectEmployeesForShift(List<EmployeeAvailability> availabilities, List<Employee> allEmployees, String startTime, String endTime, int needed) {
         List<Employee> selectedForShift = new ArrayList<>();
-        Collections.shuffle(availabilities); // Shuffle de lijst om willekeurigheid te garanderen
+        Collections.shuffle(availabilities); //shuffle de lijst om willekeurigheid te garanderen
 
         for (EmployeeAvailability availability : availabilities) {
             if (isEmployeeAvailable(availability, startTime, endTime) && selectedForShift.size() < needed) {
@@ -201,10 +201,6 @@ public class RosterGenerator {
             List<Employee> employeesForDay = entry.getValue();
 
             System.out.println(day.toUpperCase() + ":");
-
-//            //order of employees in the list matches the shifts
-//            String[] shifts = {"", "Kassa 1", "Kassa 2", "Kassa 3", "Sco 1", "Sco 2", "Counter 1", "Counter 2", "Bestellingen"};
-//            int shiftIndex = 0;
 
             //print alleen de namen van de geselecteerde medewerkers voor de dag
             System.out.println(day.toUpperCase() + ":");

@@ -103,7 +103,7 @@ public class Homescreen {
         return mainContent;
     }
 
-    // Method to generate and display the roster table
+    //method to generate and display the roster table
     private void generateRoster(Database database) {
         try {
             RosterGenerator rosterGenerator = new RosterGenerator(database);
@@ -116,40 +116,7 @@ public class Homescreen {
         }
     }
 
-    // Method to setup daily tables
-//    private void setupDailyTables(Map<String, List<Employee>> finalRoster) {
-//        for (String day : daysOfWeek) {
-//            //create a TableView for the roster
-//            TableView<Employee> rosterTableView = new TableView<>();
-//            rosterTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-//
-//            TableColumn<Employee, String> nameCol = new TableColumn<>("Naam");
-//            nameCol.setCellValueFactory(new PropertyValueFactory<>("fullname"));
-//
-////        TableColumn<Employee, String> shiftCol = new TableColumn<>("Dienst");
-////        shiftCol.setCellValueFactory(new PropertyValueFactory<>("shift"));
-//
-////        TableColumn<Employee, String> koffietCol = new TableColumn<>("Koffie");
-////        koffietCol.setCellValueFactory(new PropertyValueFactory<>("koffie"));
-////
-////        TableColumn<Employee, String> lunhCol = new TableColumn<>("Lunch");
-////        lunhCol.setCellValueFactory(new PropertyValueFactory<>("lunch"));
-////
-////        TableColumn<Employee, String> dinnerCol = new TableColumn<>("Diner");
-////        dinnerCol.setCellValueFactory(new PropertyValueFactory<>("diner"));
-//
-//            rosterTableView.getColumns().addAll(nameCol);
-//
-//            this.dailyTables.put(day, rosterTableView);
-//        }
-//
-//        for (Map.Entry<String, List<Employee>> entry : finalRoster.entrySet()) {
-//            TableView<Employee> table = dailyTables.get(entry.getKey());
-//            table.getItems().addAll(entry.getValue());
-//        }
-//    }
-
-    // Method to setup daily tables
+    //method to setup daily tables
     private void setupDailyTables(Map<String, List<Employee>> finalRoster) {
         for (String day : daysOfWeek) {
             //create a TableView for the roster
@@ -159,11 +126,11 @@ public class Homescreen {
             TableColumn<Employee, String> nameCol = new TableColumn<>("Naam");
             nameCol.setCellValueFactory(new PropertyValueFactory<>("fullname"));
 
-            // Shift column for the specific day
+            //shift column for the specific day
             TableColumn<Employee, String> shiftCol = new TableColumn<>(day.substring(0, 1).toUpperCase() + day.substring(1)); // Capitalize the day
             shiftCol.setCellValueFactory(cellData -> {
                 try {
-                    // Use reflection to get the availability based on the day of the week
+                    //use reflection to get the availability based on the day of the week
                     String methodName = "get" + day.substring(0, 1).toUpperCase() + day.substring(1);
                     Method getAvailabilityMethod = Employee.class.getMethod(methodName);
                     return new ReadOnlyStringWrapper((String) getAvailabilityMethod.invoke(cellData.getValue()));
@@ -176,21 +143,50 @@ public class Homescreen {
             TableColumn<Employee, String> spaceCol = new TableColumn<>("");
             spaceCol.setCellValueFactory(new PropertyValueFactory<>(""));
 
-            TableColumn<Employee, String> koffietCol = new TableColumn<>("Koffie");
-            koffietCol.setCellValueFactory(new PropertyValueFactory<>("koffie"));
+            //koffieCol
+            TableColumn<Employee, String> koffieCol = new TableColumn<>("Koffie");
 
+            //lunchCol
             TableColumn<Employee, String> lunhCol = new TableColumn<>("Lunch");
-            lunhCol.setCellValueFactory(new PropertyValueFactory<>("lunch"));
 
-            TableColumn<Employee, String> dinnerCol = new TableColumn<>("Diner");
-            dinnerCol.setCellValueFactory(new PropertyValueFactory<>("diner"));
+            //theeCol
+            TableColumn<Employee, String> theeCol = new TableColumn<>("Thee");
 
-            rosterTableView.getColumns().addAll(nameCol, shiftCol, spaceCol);
+            rosterTableView.getColumns().addAll(nameCol, shiftCol, spaceCol, koffieCol, lunhCol, theeCol);
+
+            koffieCol.setCellValueFactory(cellData -> {
+                String shiftTime = shiftCol.getCellData(cellData.getValue());
+                if ("07:00 - 17:00".equals(shiftTime)) {
+                    return new ReadOnlyStringWrapper("15");
+                } else {
+                    return new ReadOnlyStringWrapper("");
+                }
+            });
+
+            lunhCol.setCellValueFactory(cellData -> {
+                String shiftTime = shiftCol.getCellData(cellData.getValue());
+                if ("07:00 - 17:00".equals(shiftTime)) {
+                    return  new ReadOnlyStringWrapper("30");
+                } else if ("12:00 - 17:00".equals(shiftTime)) {
+                    return  new ReadOnlyStringWrapper("15");
+                } else {
+                    return  new ReadOnlyStringWrapper("");
+                }
+            });
+
+            theeCol.setCellValueFactory(cellData -> {
+                String shiftTime = shiftCol.getCellData(cellData.getValue());
+                if ("17:00 - 21:30".equals(shiftTime)) {
+                    return  new ReadOnlyStringWrapper("15");
+                } else {
+                    return  new ReadOnlyStringWrapper("");
+                }
+            });
 
             this.dailyTables.put(day, rosterTableView);
         }
 
-        // Array met gewenste beschikbaarheden
+        //array met gewenste beschikbaarheden
         String[] desiredShifts = {
                 "07:00 - 17:00",
                 "07:00 - 17:00",
@@ -204,15 +200,14 @@ public class Homescreen {
 
         for (String day : daysOfWeek) {
             TableView<Employee> rosterTableView = dailyTables.get(day);
-            rosterTableView.getItems().clear(); // Eerst de tabel leegmaken
+            rosterTableView.getItems().clear();
 
             List<Employee> employeesForDay = finalRoster.getOrDefault(day, new ArrayList<>());
             for (Employee employee : employeesForDay) {
                 rosterTableView.getItems().add(employee);
             }
 
-            // Stel de kolommen in met de juiste diensttijden
-            // Veronderstelt dat de 'shiftCol' al bestaat in je TableView
+            //stel de kolommen in met de juiste diensttijden
             TableColumn<Employee, String> shiftCol = (TableColumn<Employee, String>) rosterTableView.getColumns().get(1); // Index van dienstkolom
             shiftCol.setCellValueFactory(cellData -> {
                 int index = rosterTableView.getItems().indexOf(cellData.getValue());
@@ -221,7 +216,7 @@ public class Homescreen {
         }
     }
 
-    // Methode om werknemers te selecteren op basis van beschikbaarheid
+    //methode om werknemers te selecteren op basis van beschikbaarheid
     private List<Employee> selectEmployeesBasedOnAvailability(List<Employee> employees, String[] availabilities, String day) {
         List<Employee> selectedEmployees = new ArrayList<>();
         for (String availability : availabilities) {
@@ -236,26 +231,25 @@ public class Homescreen {
                 }
             }
             if (!found) {
-                selectedEmployees.add(null); // Gebruik null om aan te geven dat er geen match is
+                selectedEmployees.add(null);
             }
         }
-        return selectedEmployees.stream().filter(Objects::nonNull).collect(Collectors.toList()); // Filter null waarden
+        return selectedEmployees.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    // Helper methode om de beschikbaarheid van een medewerker te controleren
+    //methode om de beschikbaarheid van een medewerker te controleren
     private boolean employeeAvailabilityMatches(Employee employee, String desiredAvailability, String day) {
         try {
-            // Gebruik reflectie om de getter-methode voor de huidige dag op te halen
-            String methodName = "get" + day.substring(0, 1).toUpperCase() + day.substring(1); // Bijv. "getMaandag"
+            //gebruik reflectie om de getter-methode voor de huidige dag op te halen
+            String methodName = "get" + day.substring(0, 1).toUpperCase() + day.substring(1);
             Method getAvailabilityMethod = Employee.class.getMethod(methodName);
             String availability = (String) getAvailabilityMethod.invoke(employee);
 
-            // Pas de logica aan op basis van uw specifieke tijden en regels
-            // Voor nu controleert het alleen directe overeenkomst
+            //NOTICE: voor nu controleert het alleen directe overeenkomst
             return availability.equals(desiredAvailability);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
-            return false; // Return false bij een exception
+            return false; //return false bij een exception
         }
     }
 
@@ -278,7 +272,7 @@ public class Homescreen {
         HBox layout = new HBox(10); // 10 is the spacing between tables
         layout.getChildren().addAll(rolTable, dailyRosterTable, allEmployeesTableView);
 
-        rosterSpace.getChildren().add(layout); // Add the HBox to the rosterSpace
+        rosterSpace.getChildren().add(layout);
     }
 
     private TableView<String> createRoleTableView() {
@@ -290,12 +284,12 @@ public class Homescreen {
 
         TableColumn<String, String> roleColumn = new TableColumn<>("Rol");
         roleColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue()));
-        roleColumn.setMinWidth(100); // Minimale breedte van de kolom
-        roleColumn.setMaxWidth(200); // Maximale breedte van de kolom
+        roleColumn.setMinWidth(100);
+        roleColumn.setMaxWidth(200);
 
         roleTable.getColumns().add(roleColumn);
 
-        // Haal de rollen op uit de database en voeg ze toe aan de tabel
+        //haal de rollen op uit de database en voeg ze toe aan de tabel
         List<String> roles = getRolesFromDatabase();
         roles.forEach(role -> roleTable.getItems().add(role));
 
@@ -304,7 +298,7 @@ public class Homescreen {
 
     private List<String> getRolesFromDatabase() {
         List<String> roles = new ArrayList<>();
-        String sql = "SELECT rol FROM rollen"; // Veronderstelt dat je tabel 'rollen' heet en een kolom 'rol'
+        String sql = "SELECT rol FROM rollen";
 
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -316,7 +310,6 @@ public class Homescreen {
 
         } catch (SQLException e) {
             System.err.println("SQL Exception: " + e.getMessage());
-            // Afhandeling van de fout, bijvoorbeeld loggen of een foutbericht tonen
         }
 
         return roles;
@@ -377,8 +370,8 @@ public class Homescreen {
         buttonBox.setAlignment(Pos.CENTER_LEFT);
 
         VBox navigationPanel = new VBox(buttonBox);
-        navigationPanel.setAlignment(Pos.TOP_LEFT); //align to the top left
-        VBox.setMargin(buttonBox, new Insets(10, 0, 0, 10)); //top and left margin
+        navigationPanel.setAlignment(Pos.TOP_LEFT);
+        VBox.setMargin(buttonBox, new Insets(10, 0, 0, 10));
 
         return navigationPanel;
     }
@@ -390,8 +383,8 @@ public class Homescreen {
     private Pane getSidebar(Scene scene) {
         FlowPane sidebar = new FlowPane();
         sidebar.setId("sidebar");
-        sidebar.setPadding(new Insets(20, 0, 0, 0)); //top padding of 20px
-        sidebar.setAlignment(Pos.TOP_CENTER); //align children to the top center
+        sidebar.setPadding(new Insets(20, 0, 0, 0));
+        sidebar.setAlignment(Pos.TOP_CENTER);
         sidebar.prefHeightProperty().bind(scene.heightProperty());
         sidebar.maxHeightProperty().bind(scene.heightProperty());
         sidebar.setOrientation(Orientation.VERTICAL);
@@ -404,7 +397,7 @@ public class Homescreen {
 
         //create a container for the logo to add some space below it
         VBox logoContainer = new VBox(logoView);
-        logoContainer.setPadding(new Insets(0, 0, 80, 40)); //space below the logo
+        logoContainer.setPadding(new Insets(0, 0, 80, 40));
 
         //load the user icon
         Image userImage = new Image(HelloApplication.class.getResource("images/icons/user.png").toString(), 20, 20, true, true);
