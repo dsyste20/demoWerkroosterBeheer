@@ -12,8 +12,11 @@ import java.util.*;
 public class RosterGenerator {
     private Database database;
 
+    private List<String> daysOfWeek;
+
     public RosterGenerator(Database database) {
         this.database = database;
+        this.daysOfWeek = Arrays.asList("maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag");
     }
 
     public Map<String, List<Employee>> generateAndDisplayRoster() throws SQLException {
@@ -23,29 +26,55 @@ public class RosterGenerator {
 
         Map<String, List<Employee>> finalRoster = new HashMap<>();
 
-        //voor elke dag medewerkers selecteren voor de benodigde shifts
-        for (String day : availabilitiesByDay.keySet()) {
+        // Specifieke diensttijden
+        String[] desiredShifts = {
+                "07:00 - 17:00",
+                "07:00 - 17:00",
+                "17:00 - 21:30",
+                "07:00 - 17:00",
+                "17:00 - 21:30",
+                "07:00 - 17:00",
+                "17:00 - 21:30",
+                "12:00 - 17:00"
+        };
+
+        // Voor elke dag medewerkers selecteren voor de specifieke diensttijden
+        for (String day : daysOfWeek) {
             List<EmployeeAvailability> todaysAvailabilities = availabilitiesByDay.get(day);
 
-            //de tijden voor elke dienst
-            List<Employee> morningShift = selectEmployeesForShift(todaysAvailabilities, allEmployees, "07:00", "17:00", 4);
-            List<Employee> afternoonShift = selectEmployeesForShift(todaysAvailabilities, allEmployees, "12:00", "17:00", 1);
-            List<Employee> eveningShift = selectEmployeesForShift(todaysAvailabilities, allEmployees, "17:00", "21:30", 3);
-
-            //combineer alle shifts voor de dag in een lijst
             List<Employee> employeesForDay = new ArrayList<>();
-            employeesForDay.addAll(morningShift);
-            employeesForDay.addAll(afternoonShift);
-            employeesForDay.addAll(eveningShift);
+            Set<String> usedEmployeeIds = new HashSet<>();
 
-            //voeg de lijst van medewerkers voor de dag toe aan het finale rooster
+            for (String shift : desiredShifts) {
+                Employee selectedEmployee = selectEmployeeForShift(todaysAvailabilities, allEmployees, shift, usedEmployeeIds);
+                employeesForDay.add(selectedEmployee);
+            }
+
             finalRoster.put(day, employeesForDay);
         }
 
-        //rooster weergeven
         displayRoster(finalRoster);
 
         return finalRoster;
+    }
+
+    private Employee selectEmployeeForShift(List<EmployeeAvailability> availabilities, List<Employee> allEmployees, String shift, Set<String> usedEmployeeIds) {
+        String[] times = shift.split(" - ");
+        String startTime = times[0];
+        String endTime = times[1];
+
+        Collections.shuffle(availabilities); // Shuffle de beschikbaarheden
+
+        for (EmployeeAvailability availability : availabilities) {
+            if (availability.includesTimeRange(startTime, endTime) && !usedEmployeeIds.contains(availability.getEmployeeId())) {
+                Employee employee = findEmployeeById(allEmployees, availability.getEmployeeId());
+                if (employee != null) {
+                    usedEmployeeIds.add(employee.getId());
+                    return employee;
+                }
+            }
+        }
+        return new Employee(); // Geen geschikte medewerker gevonden
     }
 
     public List<Employee> fetchEmployees() {

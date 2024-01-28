@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Homescreen {
     private final Scene homeScene;
@@ -158,7 +159,7 @@ public class Homescreen {
             TableColumn<Employee, String> nameCol = new TableColumn<>("Naam");
             nameCol.setCellValueFactory(new PropertyValueFactory<>("fullname"));
 
-            // Availability column for the specific day
+            // Shift column for the specific day
             TableColumn<Employee, String> shiftCol = new TableColumn<>(day.substring(0, 1).toUpperCase() + day.substring(1)); // Capitalize the day
             shiftCol.setCellValueFactory(cellData -> {
                 try {
@@ -172,36 +173,91 @@ public class Homescreen {
                 }
             });
 
-            rosterTableView.getColumns().addAll(nameCol, shiftCol);
+            TableColumn<Employee, String> spaceCol = new TableColumn<>("");
+            spaceCol.setCellValueFactory(new PropertyValueFactory<>(""));
+
+            TableColumn<Employee, String> koffietCol = new TableColumn<>("Koffie");
+            koffietCol.setCellValueFactory(new PropertyValueFactory<>("koffie"));
+
+            TableColumn<Employee, String> lunhCol = new TableColumn<>("Lunch");
+            lunhCol.setCellValueFactory(new PropertyValueFactory<>("lunch"));
+
+            TableColumn<Employee, String> dinnerCol = new TableColumn<>("Diner");
+            dinnerCol.setCellValueFactory(new PropertyValueFactory<>("diner"));
+
+            rosterTableView.getColumns().addAll(nameCol, shiftCol, spaceCol);
 
             this.dailyTables.put(day, rosterTableView);
         }
 
-        // Een set om bij te houden welke werknemers al zijn toegevoegd voor de huidige dag
-        Set<String> addedEmployees;
+        // Array met gewenste beschikbaarheden
+        String[] desiredShifts = {
+                "07:00 - 17:00",
+                "07:00 - 17:00",
+                "17:00 - 21:30",
+                "07:00 - 17:00",
+                "17:00 - 21:30",
+                "07:00 - 17:00",
+                "17:00 - 21:30",
+                "12:00 - 17:00"
+        };
 
         for (String day : daysOfWeek) {
-            addedEmployees = new HashSet<>();
-            TableView<Employee> table = dailyTables.get(day);
+            TableView<Employee> rosterTableView = dailyTables.get(day);
+            rosterTableView.getItems().clear(); // Eerst de tabel leegmaken
+
             List<Employee> employeesForDay = finalRoster.getOrDefault(day, new ArrayList<>());
-
-            // Voeg werknemers toe tot je er 8 hebt voor de dag
             for (Employee employee : employeesForDay) {
-                if (!addedEmployees.contains(employee.getId()) && addedEmployees.size() < 8) { // Gebruik getId() of een andere unieke identifier
-                    table.getItems().add(employee);
-                    addedEmployees.add(employee.getId());
-                }
+                rosterTableView.getItems().add(employee);
             }
 
-            // Als er niet genoeg werknemers zijn, voeg dan lege plaatsen toe
-            while (addedEmployees.size() < 8) {
-                Employee emptyEmployee = new Employee(); // Zorg ervoor dat Employee een lege constructor heeft
-                table.getItems().add(emptyEmployee);
-                addedEmployees.add("Placeholder" + addedEmployees.size()); // Voeg een unieke placeholder toe
-            }
+            // Stel de kolommen in met de juiste diensttijden
+            // Veronderstelt dat de 'shiftCol' al bestaat in je TableView
+            TableColumn<Employee, String> shiftCol = (TableColumn<Employee, String>) rosterTableView.getColumns().get(1); // Index van dienstkolom
+            shiftCol.setCellValueFactory(cellData -> {
+                int index = rosterTableView.getItems().indexOf(cellData.getValue());
+                return new ReadOnlyStringWrapper(desiredShifts[index % desiredShifts.length]);
+            });
         }
     }
 
+    // Methode om werknemers te selecteren op basis van beschikbaarheid
+    private List<Employee> selectEmployeesBasedOnAvailability(List<Employee> employees, String[] availabilities, String day) {
+        List<Employee> selectedEmployees = new ArrayList<>();
+        for (String availability : availabilities) {
+            boolean found = false;
+            for (Iterator<Employee> iterator = employees.iterator(); iterator.hasNext();) {
+                Employee employee = iterator.next();
+                if (employeeAvailabilityMatches(employee, availability, day)) {
+                    selectedEmployees.add(employee);
+                    iterator.remove();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                selectedEmployees.add(null); // Gebruik null om aan te geven dat er geen match is
+            }
+        }
+        return selectedEmployees.stream().filter(Objects::nonNull).collect(Collectors.toList()); // Filter null waarden
+    }
+
+    // Helper methode om de beschikbaarheid van een medewerker te controleren
+    private boolean employeeAvailabilityMatches(Employee employee, String desiredAvailability, String day) {
+        try {
+            // Gebruik reflectie om de getter-methode voor de huidige dag op te halen
+            String methodName = "get" + day.substring(0, 1).toUpperCase() + day.substring(1); // Bijv. "getMaandag"
+            Method getAvailabilityMethod = Employee.class.getMethod(methodName);
+            String availability = (String) getAvailabilityMethod.invoke(employee);
+
+            // Pas de logica aan op basis van uw specifieke tijden en regels
+            // Voor nu controleert het alleen directe overeenkomst
+            return availability.equals(desiredAvailability);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            return false; // Return false bij een exception
+        }
+    }
 
     private void displayRosterForCurrentDay() {
         String currentDay = daysOfWeek.get(currentDayIndex);
