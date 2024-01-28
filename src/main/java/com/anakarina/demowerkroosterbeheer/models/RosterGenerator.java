@@ -212,19 +212,4 @@ public class RosterGenerator {
             System.out.println("----------------------------------------");
         }
     }
-
-//    public List<Employee> generateEmployeesWithRoles(List<Employee> employees) {
-//        String[] roles = {"Kassa 1", "Kassa 2", "Kassa 3", "Sco 1", "Sco 2", "Counter 1", "Counter 2", "Bestellingen"};
-//        int index = 0;
-//
-//        for (Employee employee : employees) {
-//            //wijst elke werknemer een unieke rol toe uit de rollenlijst
-//            if (index < roles.length) {
-//                employee.setRol(roles[index]);
-//                index++;
-//            }
-//        }
-//
-//        return employees;
-//    }
 }

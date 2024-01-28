@@ -83,6 +83,10 @@ public class Homescreen {
 
         Button btnVacationRequests = new Button("Vakantieaanvragen");
         btnVacationRequests.setId("buttonVakantie");
+        btnVacationRequests.setOnAction(event -> {
+            VacationRequest vacationRequest = new VacationRequest();
+            vacationRequest.show();
+        });
 
         //add the navigation panel at the top of mainContent
         VBox navigationPanel = createNavigationPanel();
