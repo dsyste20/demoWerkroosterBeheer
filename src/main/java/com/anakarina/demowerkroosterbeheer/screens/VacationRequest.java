@@ -1,6 +1,7 @@
 package com.anakarina.demowerkroosterbeheer.screens;
 
 import com.anakarina.demowerkroosterbeheer.Database;
+import com.anakarina.demowerkroosterbeheer.HelloApplication;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,9 +27,10 @@ public class VacationRequest {
 
     private void setupStage() {
         VBox layout = createVacationRequestLayout();
-        Scene scene = new Scene(layout, 1000, 800);
+        Scene vacationScene = new Scene(layout, 1000, 800);
+        vacationScene.getStylesheets().add(HelloApplication.class.getResource("stylesheets/vacationRequest.css").toString());
         stage.setTitle("Vakantieaanvraag");
-        stage.setScene(scene);
+        stage.setScene(vacationScene);
     }
 
     private VBox createVacationRequestLayout() {
@@ -36,20 +38,12 @@ public class VacationRequest {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
 
-        // Koprij
-        HBox headerRow = new HBox(10);
-        headerRow.setAlignment(Pos.CENTER_LEFT);
-        headerRow.getChildren().addAll(
-                new Label("Medewerker ID"),
-                new Label("Naam"),
-                new Label("Aanvraag"),
-                new Label("Status"),
-                new Label("Datum")
-        );
+        // Koprij met vaste breedtes voor elke kolom
+        HBox headerRow = createHeaderRow();
         layout.getChildren().add(headerRow);
 
-        Separator separator = new Separator();
-        layout.getChildren().add(separator);
+        // Horizontale lijn na de koptekst
+        layout.getChildren().add(new Separator());
 
         try {
             Connection conn = database.getConnection();
@@ -71,6 +65,73 @@ public class VacationRequest {
         return layout;
     }
 
+    private HBox createHeaderRow() {
+        HBox headerRow = new HBox(10);
+        headerRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label medewerkerIdLabel = new Label("mID");
+        medewerkerIdLabel.setMinWidth(50);
+
+        Label nameLabel = new Label("Naam");
+        nameLabel.setMinWidth(100);
+
+        Label aanvraagLabel = new Label("Aanvraag");
+        aanvraagLabel.setMinWidth(150);
+
+        Label statusLabel = new Label("Status");
+        statusLabel.setMinWidth(100);
+
+        Label datumLabel = new Label("Datum");
+        datumLabel.setMinWidth(100);
+
+        headerRow.getChildren().addAll(medewerkerIdLabel, nameLabel, aanvraagLabel, statusLabel, datumLabel);
+        return headerRow;
+    }
+
+    private HBox createRequestRow(ResultSet rs) throws SQLException {
+        HBox requestRow = new HBox(10);
+        requestRow.setAlignment(Pos.CENTER_LEFT);
+
+        int requestId = rs.getInt("id");
+        Label idLabel = new Label(String.valueOf(rs.getInt("medewerkerID")));
+        idLabel.setMinWidth(50);
+
+        String fullName = rs.getString("firstname") + " " + rs.getString("lastname");
+        Label nameLabel = new Label(fullName);
+        nameLabel.setMinWidth(100);
+
+        Label requestLabel = new Label(rs.getString("aanvraag"));
+        requestLabel.setMinWidth(150);
+
+        Label statusLabel = new Label(rs.getString("status"));
+        statusLabel.setMinWidth(100);
+
+        Label dateLabel = new Label(rs.getDate("aanvraagDatum").toString());
+        dateLabel.setMinWidth(100);
+
+        Button approveButton = new Button("Goedkeuren");
+        approveButton.setId("approveButton");
+        approveButton.setOnAction(e -> {
+            try {
+                updateRequestStatus(requestId, "Goedgekeurd", requestRow);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        Button denyButton = new Button("Afwijzen");
+        denyButton.setId("denyButton");
+        denyButton.setOnAction(e -> {
+            try {
+                updateRequestStatus(requestId, "Afgewezen", requestRow);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        requestRow.getChildren().addAll(idLabel, nameLabel, requestLabel, statusLabel, dateLabel, approveButton, denyButton);
+        return requestRow;
+    }
 
     private void updateRequestStatus(int requestId, String status, HBox requestRow) throws SQLException {
         Connection conn = database.getConnection();
@@ -90,46 +151,6 @@ public class VacationRequest {
             Button denyButton = (Button) requestRow.getChildren().get(5);
             requestRow.getChildren().removeAll(approveButton, denyButton);
         }
-    }
-
-    private HBox createRequestRow(ResultSet rs) throws SQLException {
-        HBox requestRow = new HBox(10);
-        requestRow.setAlignment(Pos.CENTER_LEFT);
-
-        int requestId = rs.getInt("id");
-        String medewerkerId = String.valueOf(rs.getInt("medewerkerID"));
-        String naam = rs.getString("firstname") + " " + rs.getString("lastname");
-        String aanvraag = rs.getString("aanvraag");
-        String status = rs.getString("status");
-        String aanvraagDatum = rs.getDate("aanvraagDatum").toString();
-
-        Label employeeLabel = new Label(medewerkerId);
-        Label nameLabel = new Label(naam);
-        Label requestLabel = new Label(aanvraag);
-        Label statusLabel = new Label(status);
-        Label dateLabel = new Label(aanvraagDatum);
-
-        Button approveButton = new Button("Goedkeuren");
-        approveButton.setOnAction(e -> {
-            try {
-                updateRequestStatus(requestId, "Goedgekeurd", requestRow);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-        Button denyButton = new Button("Afwijzen");
-        denyButton.setOnAction(e -> {
-            try {
-                updateRequestStatus(requestId, "Afgewezen", requestRow);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-        requestRow.getChildren().addAll(employeeLabel, nameLabel, requestLabel, statusLabel, dateLabel, approveButton, denyButton);
-
-        return requestRow;
     }
 
     public void show() {

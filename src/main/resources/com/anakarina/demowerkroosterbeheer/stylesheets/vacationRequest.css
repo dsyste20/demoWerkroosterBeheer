@@ -1,0 +1,9 @@
+#approveButton {
+    -fx-background-color: green;
+    -fx-text-fill: white;
+}
+
+#denyButton {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+}
