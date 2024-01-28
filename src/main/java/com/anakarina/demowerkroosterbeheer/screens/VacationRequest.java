@@ -57,8 +57,14 @@ public class VacationRequest {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                HBox requestRow = createRequestRow(rs);
-                layout.getChildren().addAll(requestRow, new Separator());
+                java.sql.Date requestDate = rs.getDate("aanvraagDatum");
+                //controleer of de datum voorbij de huidige datum is
+                java.util.Date currentDate = new java.util.Date();
+                if (requestDate.toLocalDate().isAfter(currentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())) {
+                    //datum is nog niet verlopen, toon het verzoek
+                    HBox requestRow = createRequestRow(rs);
+                    layout.getChildren().addAll(requestRow, new Separator());
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -83,10 +89,13 @@ public class VacationRequest {
         Label statusLabel = new Label("Status");
         statusLabel.setMinWidth(100);
 
-        Label datumLabel = new Label("Datum");
-        datumLabel.setMinWidth(100);
+        Label beginDatumLabel = new Label("Begin");
+        beginDatumLabel.setMinWidth(100);
 
-        headerRow.getChildren().addAll(medewerkerIdLabel, nameLabel, aanvraagLabel, statusLabel, datumLabel);
+        Label eindDatumLabel = new Label("eind");
+        eindDatumLabel.setMinWidth(100);
+
+        headerRow.getChildren().addAll(medewerkerIdLabel, nameLabel, aanvraagLabel, statusLabel, beginDatumLabel, eindDatumLabel);
         return headerRow;
     }
 
@@ -108,30 +117,40 @@ public class VacationRequest {
         Label statusLabel = new Label(rs.getString("status"));
         statusLabel.setMinWidth(100);
 
-        Label dateLabel = new Label(rs.getDate("aanvraagDatum").toString());
-        dateLabel.setMinWidth(100);
+        Label startDateLabel = new Label(rs.getDate("aanvraagDatum").toString());
+        startDateLabel.setMinWidth(100);
 
-        Button approveButton = new Button("Goedkeuren");
-        approveButton.setId("approveButton");
-        approveButton.setOnAction(e -> {
-            try {
-                updateRequestStatus(requestId, "Goedgekeurd", requestRow);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        });
+        Label endDateLabel = new Label(rs.getDate("eindDatum").toString());
+        endDateLabel.setMinWidth(100);
 
-        Button denyButton = new Button("Afwijzen");
-        denyButton.setId("denyButton");
-        denyButton.setOnAction(e -> {
-            try {
-                updateRequestStatus(requestId, "Afgewezen", requestRow);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        });
+        //controleer of de status "In behandeling" is voordat de knoppen worden toegevoegd
+        if ("In behandeling".equals(statusLabel.getText())) {
+            Button approveButton = new Button("Goedkeuren");
+            approveButton.setId("approveButton");
+            approveButton.setOnAction(e -> {
+                try {
+                    updateRequestStatus(requestId, "Goedgekeurd", requestRow);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            });
 
-        requestRow.getChildren().addAll(idLabel, nameLabel, requestLabel, statusLabel, dateLabel, approveButton, denyButton);
+            Button denyButton = new Button("Afwijzen");
+            denyButton.setId("denyButton");
+            denyButton.setOnAction(e -> {
+                try {
+                    updateRequestStatus(requestId, "Afgewezen", requestRow);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            requestRow.getChildren().addAll(idLabel, nameLabel, requestLabel, statusLabel, startDateLabel, endDateLabel, approveButton, denyButton);
+        } else {
+            //als de status niet "In behandeling" is, voeg alleen de labels toe
+            requestRow.getChildren().addAll(idLabel, nameLabel, requestLabel, statusLabel, startDateLabel, endDateLabel);
+        }
+
         return requestRow;
     }
 
