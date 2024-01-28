@@ -20,6 +20,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -156,8 +158,19 @@ public class Homescreen {
             TableColumn<Employee, String> nameCol = new TableColumn<>("Naam");
             nameCol.setCellValueFactory(new PropertyValueFactory<>("fullname"));
 
-            TableColumn<Employee, String> shiftCol = new TableColumn<>("Dienst");
-            shiftCol.setCellValueFactory(new PropertyValueFactory<>("shift"));
+            // Availability column for the specific day
+            TableColumn<Employee, String> shiftCol = new TableColumn<>(day.substring(0, 1).toUpperCase() + day.substring(1)); // Capitalize the day
+            shiftCol.setCellValueFactory(cellData -> {
+                try {
+                    // Use reflection to get the availability based on the day of the week
+                    String methodName = "get" + day.substring(0, 1).toUpperCase() + day.substring(1);
+                    Method getAvailabilityMethod = Employee.class.getMethod(methodName);
+                    return new ReadOnlyStringWrapper((String) getAvailabilityMethod.invoke(cellData.getValue()));
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                    return new ReadOnlyStringWrapper("Niet beschikbaar");
+                }
+            });
 
             rosterTableView.getColumns().addAll(nameCol, shiftCol);
 
