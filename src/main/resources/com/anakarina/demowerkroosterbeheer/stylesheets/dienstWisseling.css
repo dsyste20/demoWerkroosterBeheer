@@ -1,0 +1,17 @@
+#approveButton {
+    -fx-background-color: green;
+    -fx-text-fill: white;
+}
+
+#denyButton {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+}
+
+#approveButton:hover {
+    -fx-background-color: #1DA329;
+}
+
+#denyButton:hover {
+    -fx-background-color: #F74F4F;
+}

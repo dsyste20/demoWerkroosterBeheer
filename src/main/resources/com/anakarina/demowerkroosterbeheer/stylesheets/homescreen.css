@@ -26,18 +26,12 @@
     -fx-font-size: 16px;
 }
 
-#buttonRoster {
-    -fx-background-color: white;
-    -fx-text-fill: black;
+#tableTitle {
     -fx-font-size: 16px;
-    -fx-padding: 10px 20px;
-    -fx-border-radius: 20px;
-    -fx-background-radius: 20px;
-    -fx-effect: dropshadow( one-pass-box , grey , 8 , 0.0 , 2 , 0 );
-    -fx-cursor: hand;
+    -fx-font-weight: bold;
 }
 
-#buttonVakantie {
+#buttonRoster, #buttonVakantie, #buttonDienst {
     -fx-background-color: white;
     -fx-text-fill: black;
     -fx-font-size: 16px;

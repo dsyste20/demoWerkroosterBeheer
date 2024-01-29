@@ -142,49 +142,6 @@ public class RosterGenerator {
         return availabilitiesByDay;
     }
 
-    private List<Employee> selectEmployeesForDay(Map<String, List<EmployeeAvailability>> availabilitiesByDay, List<Employee> allEmployees, String day) {
-        List<EmployeeAvailability> todaysAvailabilities = availabilitiesByDay.get(day);
-        Set<String> selectedEmployeeIds = new HashSet<>();
-        List<Employee> selectedEmployeesForDay = new ArrayList<>();
-
-        while (selectedEmployeesForDay.size() < 8) {
-            Collections.shuffle(todaysAvailabilities); //shuffle om willekeurigheid te garanderen
-
-            for (EmployeeAvailability availability : todaysAvailabilities) {
-                if (selectedEmployeeIds.size() >= 8) break; //stop als we genoeg medewerkers hebben
-
-                if (isEmployeeAvailable(availability, "07:00", "21:30") && !selectedEmployeeIds.contains(availability.getEmployeeId())) {
-                    Employee employee = findEmployeeById(allEmployees, availability.getEmployeeId());
-                    if (employee != null) {
-                        selectedEmployeesForDay.add(employee);
-                        selectedEmployeeIds.add(employee.getId());
-                    }
-                }
-            }
-        }
-        return selectedEmployeesForDay;
-    }
-
-    private List<Employee> selectEmployeesForShift(List<EmployeeAvailability> availabilities, List<Employee> allEmployees, String startTime, String endTime, int needed) {
-        List<Employee> selectedForShift = new ArrayList<>();
-        Collections.shuffle(availabilities); //shuffle de lijst om willekeurigheid te garanderen
-
-        for (EmployeeAvailability availability : availabilities) {
-            if (isEmployeeAvailable(availability, startTime, endTime) && selectedForShift.size() < needed) {
-                Employee employee = findEmployeeById(allEmployees, availability.getEmployeeId());
-                if (employee != null && !selectedForShift.contains(employee)) {
-                    selectedForShift.add(employee);
-                }
-            }
-        }
-        return selectedForShift;
-    }
-
-    private boolean isEmployeeAvailable(EmployeeAvailability availability, String startTime, String endTime) {
-        //implementation of includesTimeRange method in EmployeeAvailability class
-        return availability.includesTimeRange(startTime, endTime);
-    }
-
     private Employee findEmployeeById(List<Employee> employees, String employeeId) {
         for (Employee employee : employees) {
             if (employee.getId().equals(employeeId)) {
