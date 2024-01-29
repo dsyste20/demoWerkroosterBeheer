@@ -38,6 +38,7 @@ public class Homescreen {
     private List<String> daysOfWeek;
     private int currentDayIndex;
     private Label currentDayLabel;
+    private VBox mainContent;
 
     public Homescreen(Stage stage, String name, Database database) {
         this.loggedInUsername = name;
@@ -49,6 +50,9 @@ public class Homescreen {
         HBox mainContainer = new HBox();
         homeScene = new Scene(mainContainer);
         homeScene.getStylesheets().add(HelloApplication.class.getResource("stylesheets/homescreen.css").toString());
+
+        currentDayLabel = new Label();
+        currentDayLabel.setText("Rooster voor " + daysOfWeek.get(currentDayIndex));
 
         //add the sidebar and the main content to the HBox
         mainContainer.getChildren().addAll(getSidebar(homeScene), getMainContent());
@@ -65,7 +69,7 @@ public class Homescreen {
      * @return Pane
      */
     private Pane getMainContent() {
-        VBox mainContent = new VBox();
+        mainContent = new VBox();
         mainContent.setSpacing(20); //space between the roster and the buttons
         mainContent.setPadding(new Insets(40, 0, 0, 0));
 
@@ -74,37 +78,35 @@ public class Homescreen {
         rosterSpace.setId("rosterSpace");
         rosterSpace.setPrefSize(900, 500);
 
-        //create the buttons for generating roster and vacation requests
+        //add the black area and button container to the main content VBox
+        mainContent.getChildren().addAll(rosterSpace, createButtonContainer());
+
+        return mainContent;
+    }
+
+    private HBox createButtonContainer() {
+        // Create buttons for generating roster and vacation requests
         Button btnGenerateRoster = new Button("Rooster Genereren");
         btnGenerateRoster.setId("buttonRoster");
-        btnGenerateRoster.setOnAction(event -> {
-            generateRoster(database);
-        });
+        btnGenerateRoster.setOnAction(event -> generateRoster(database));
 
         Button btnVacationRequests = new Button("Vakantieaanvragen");
         btnVacationRequests.setId("buttonVakantie");
-        btnVacationRequests.setOnAction(event -> {
-            VacationRequest vacationRequest = new VacationRequest(database);
-            vacationRequest.show();
-        });
+        btnVacationRequests.setOnAction(event -> new VacationRequest(database).show());
+
+        Button btnDienstWisseling = new Button("Dienstwisselingen");
+        btnDienstWisseling.setId("buttonDienst");
+        btnDienstWisseling.setOnAction(event -> new DienstWisseling(database).show());
 
         //add the navigation panel at the top of mainContent
         VBox navigationPanel = createNavigationPanel();
-        mainContent.getChildren().add(0, navigationPanel); //add at the first position
+        mainContent.getChildren().add(0, navigationPanel);
 
         //button container
-        HBox buttonContainer = new HBox(30, navigationPanel, btnGenerateRoster, btnVacationRequests);
+        HBox buttonContainer = new HBox(30, navigationPanel, btnGenerateRoster, btnVacationRequests, btnDienstWisseling);
         buttonContainer.setAlignment(Pos.CENTER);
 
-        //het label voor de huidige dag
-        currentDayLabel = new Label("");
-        currentDayLabel.setAlignment(Pos.CENTER);
-        currentDayLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
-        //add the black area and button container to the main content VBox
-        mainContent.getChildren().addAll(currentDayLabel, rosterSpace, buttonContainer);
-
-        return mainContent;
+        return buttonContainer;
     }
 
     //method to generate and display the roster table
@@ -259,7 +261,9 @@ public class Homescreen {
 
     private void displayRosterForCurrentDay() {
         String currentDay = daysOfWeek.get(currentDayIndex);
-        currentDayLabel.setText("Rooster voor " + currentDay);
+        if (currentDayLabel != null) {
+            currentDayLabel.setText("Rooster voor " + currentDay);
+        }
 
         rosterSpace.getChildren().clear(); //clear the roster space
 
@@ -325,7 +329,7 @@ public class Homescreen {
         TableView<Employee> allEmployeesTableView = new TableView<>();
         allEmployeesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableColumn<Employee, String> nameColumn = new TableColumn<>("Naam");
+        TableColumn<Employee, String> nameColumn = new TableColumn<>("Beschikbaarheden");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("fullname"));
         nameColumn.setMinWidth(150);
 
@@ -453,14 +457,7 @@ public class Homescreen {
         }
 
         Text navItemText = new Text(title);
-
-        if (iconView != null) {
-            //add the icon and the text to the nav item
-            navItem.getChildren().addAll(iconView, navItemText);
-        } else {
-            //if there's no icon, just add the text
-            navItem.getChildren().add(navItemText);
-        }
+        navItem.getChildren().addAll(iconView, navItemText);
 
         if (active) {
             navItem.setId("navItem-active");

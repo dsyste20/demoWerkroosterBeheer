@@ -26,7 +26,7 @@ public class HelloApplication extends Application {
         stage.setWidth(applicationSize[0]);
         stage.setHeight(applicationSize[1]);
         stage.setResizable(false);
-        stage.setTitle("WerkroosterBeheer");
+        stage.setTitle("Werkrooster");
         stage.show();
     }
 //    @Override
