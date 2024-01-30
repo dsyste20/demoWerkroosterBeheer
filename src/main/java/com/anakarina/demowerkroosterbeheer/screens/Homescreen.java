@@ -4,6 +4,8 @@ import com.anakarina.demowerkroosterbeheer.Database;
 import com.anakarina.demowerkroosterbeheer.Employee;
 import com.anakarina.demowerkroosterbeheer.HelloApplication;
 import com.anakarina.demowerkroosterbeheer.models.RosterGenerator;
+import com.anakarina.demowerkroosterbeheer.models.RosterManager;
+
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -26,6 +28,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.temporal.IsoFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -98,12 +102,20 @@ public class Homescreen {
         btnDienstWisseling.setId("buttonDienst");
         btnDienstWisseling.setOnAction(event -> new DienstWisseling(database).show());
 
+        Button btnSaveRoster = new Button("Rooster opslaan");
+        btnSaveRoster.setId("buttonSaveRoster");
+        btnSaveRoster.setOnAction(event -> saveRoster());
+
+        Button btnSavedRoster = new Button("Opgeslagen Rooster");
+        btnSavedRoster.setId("buttonSavedRoster");
+        btnSavedRoster.setOnAction(event -> new ViewRosterScreen(database).show());
+
         //add the navigation panel at the top of mainContent
         VBox navigationPanel = createNavigationPanel();
         mainContent.getChildren().add(0, navigationPanel);
 
         //button container
-        HBox buttonContainer = new HBox(30, navigationPanel, btnGenerateRoster, btnVacationRequests, btnDienstWisseling);
+        HBox buttonContainer = new HBox(30, navigationPanel, btnGenerateRoster, btnSaveRoster, btnSavedRoster, btnVacationRequests, btnDienstWisseling);
         buttonContainer.setAlignment(Pos.CENTER);
 
         return buttonContainer;
@@ -365,6 +377,46 @@ public class Homescreen {
         allEmployeesTableView.getItems().addAll(allEmployees);
 
         return allEmployeesTableView;
+    }
+
+    private void saveRoster() {
+        try {
+            RosterManager rosterManager = new RosterManager(database);
+            Map<String, List<String>> rosterData = getRosterDataFromTables();
+            rosterManager.updateOrSaveCurrentRoster(rosterData);
+
+            showAlert(Alert.AlertType.INFORMATION, "Succes", "Het rooster is bijgewerkt voor week " + (LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            showAlert(Alert.AlertType.ERROR, "Fout", "Er is een fout opgetreden bij het bijwerken van het rooster: " + e.getMessage());
+        }
+    }
+
+    private Map<String, List<String>> getRosterDataFromTables() {
+        Map<String, List<String>> rosterData = new HashMap<>();
+
+        //iterate through each day of the week and get the corresponding TableView
+        for (String day : daysOfWeek) {
+            TableView<Employee> dailyRoster = dailyTables.get(day);
+
+            //get the list of full names from the TableView for that day
+            List<String> employeeNames = dailyRoster.getItems().stream()
+                    .map(Employee::getFullname)
+                    .collect(Collectors.toList());
+
+            rosterData.put(day, employeeNames);
+        }
+
+        return rosterData;
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     //method to create navigation buttons
