@@ -5,6 +5,7 @@ import com.anakarina.demowerkroosterbeheer.HelloApplication;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -16,7 +17,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.IsoFields;
 
 public class DienstWisseling {
     private Stage stage;
@@ -126,6 +129,7 @@ public class DienstWisseling {
             approveButton.setOnAction(e -> {
                 try {
                     updateRequestStatus(requestId, "Goedgekeurd", requestRow);
+                    showAlert(Alert.AlertType.INFORMATION, "Goedgekeurd", "Dienstwisseling goedgekeurd!");
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -136,6 +140,7 @@ public class DienstWisseling {
             denyButton.setOnAction(e -> {
                 try {
                     updateRequestStatus(requestId, "Afgewezen", requestRow);
+                    showAlert(Alert.AlertType.INFORMATION, "Afgewezen", "Dienstwisseling afgekeurdf!");
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -148,6 +153,14 @@ public class DienstWisseling {
         }
 
         return requestRow;
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void updateRequestStatus(int requestId, String status, HBox requestRow) throws SQLException {

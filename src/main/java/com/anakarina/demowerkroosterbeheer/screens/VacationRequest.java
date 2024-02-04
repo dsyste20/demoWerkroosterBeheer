@@ -130,6 +130,7 @@ public class VacationRequest {
             approveButton.setOnAction(e -> {
                 try {
                     updateRequestStatus(requestId, "Goedgekeurd", requestRow);
+                    showAlert(Alert.AlertType.INFORMATION, "Goedgekeurd", "Dienstwisseling goedgekeurd!");
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -140,6 +141,7 @@ public class VacationRequest {
             denyButton.setOnAction(e -> {
                 try {
                     updateRequestStatus(requestId, "Afgewezen", requestRow);
+                    showAlert(Alert.AlertType.INFORMATION, "Afgewezen", "Dienstwisseling afgekeurdf!");
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -152,6 +154,14 @@ public class VacationRequest {
         }
 
         return requestRow;
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void updateRequestStatus(int requestId, String status, HBox requestRow) throws SQLException {
