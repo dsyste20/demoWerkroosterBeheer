@@ -72,8 +72,8 @@ public class RosterManager {
     }
 
     public void deleteOldRoster() throws SQLException {
-        int weekNumberMinusOne = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - 1;
-        String tableName = "rooster_" + weekNumberMinusOne;
+        int weekNumberMinusTwo = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - 2;
+        String tableName = "rooster_" + weekNumberMinusTwo;
         if (checkTableExists(tableName)) {
             dropRosterTable(tableName);
         }
