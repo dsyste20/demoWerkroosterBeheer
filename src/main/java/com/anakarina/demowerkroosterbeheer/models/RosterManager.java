@@ -15,16 +15,6 @@ public class RosterManager {
         this.database = database;
     }
 
-    public void saveCurrentRoster(Map<String, List<String>> rosterData) throws SQLException {
-        int weekNumberPlusOne = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1;
-        String tableName = "rooster_" + weekNumberPlusOne;
-        if (!checkTableExists(tableName)) {
-            createRosterTable(tableName);
-            fillRosterTable(tableName, rosterData);
-            deleteOldRoster();
-        }
-    }
-
     private boolean checkTableExists(String tableName) throws SQLException {
         String checkTableExistsSQL = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?;";
         try (Connection conn = database.getConnection();
@@ -61,15 +51,16 @@ public class RosterManager {
         try (Connection conn = database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
             stmt.setString(1, "Week " + (LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1));
-            stmt.setString(2, String.join(", ", rosterData.get("maandag")));
-            stmt.setString(3, String.join(", ", rosterData.get("dinsdag")));
-            stmt.setString(4, String.join(", ", rosterData.get("woensdag")));
-            stmt.setString(5, String.join(", ", rosterData.get("donderdag")));
-            stmt.setString(6, String.join(", ", rosterData.get("vrijdag")));
-            stmt.setString(7, String.join(", ", rosterData.get("zaterdag")));
+            stmt.setString(2, String.join(", ", rosterData.getOrDefault("maandag", List.of())));
+            stmt.setString(3, String.join(", ", rosterData.getOrDefault("dinsdag", List.of())));
+            stmt.setString(4, String.join(", ", rosterData.getOrDefault("woensdag", List.of())));
+            stmt.setString(5, String.join(", ", rosterData.getOrDefault("donderdag", List.of())));
+            stmt.setString(6, String.join(", ", rosterData.getOrDefault("vrijdag", List.of())));
+            stmt.setString(7, String.join(", ", rosterData.getOrDefault("zaterdag", List.of())));
             stmt.executeUpdate();
         }
     }
+
 
     public void deleteOldRoster() throws SQLException {
         int weekNumberMinusTwo = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - 2;
