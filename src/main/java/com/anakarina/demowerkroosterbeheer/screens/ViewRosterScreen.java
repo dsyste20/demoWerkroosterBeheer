@@ -56,25 +56,31 @@ public class ViewRosterScreen {
     }
 
     private void populateTableWithData(TableView<RosterEntry> table) throws SQLException {
-        int weekNumber = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1;
-        String tableName = "rooster_" + weekNumber;
-
-        String sql = "SELECT * FROM " + tableName + ";";
         try (Connection conn = database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement("SHOW TABLES LIKE 'rooster_%'");
+             ResultSet tablesResultSet = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                RosterEntry entry = new RosterEntry(
-                        rs.getString("periode"),
-                        rs.getString("maandag"),
-                        rs.getString("dinsdag"),
-                        rs.getString("woensdag"),
-                        rs.getString("donderdag"),
-                        rs.getString("vrijdag"),
-                        rs.getString("zaterdag")
-                );
-                table.getItems().add(entry);
+            while (tablesResultSet.next()) {
+                String tableName = tablesResultSet.getString(1);
+
+                //voor elke gevonden tabel, voeg de gegevens toe aan de tabelweergave
+                String sql = "SELECT * FROM " + tableName + ";";
+                try (PreparedStatement dataStmt = conn.prepareStatement(sql);
+                     ResultSet rs = dataStmt.executeQuery()) {
+
+                    while (rs.next()) {
+                        RosterEntry entry = new RosterEntry(
+                                rs.getString("periode"),
+                                rs.getString("maandag"),
+                                rs.getString("dinsdag"),
+                                rs.getString("woensdag"),
+                                rs.getString("donderdag"),
+                                rs.getString("vrijdag"),
+                                rs.getString("zaterdag")
+                        );
+                        table.getItems().add(entry);
+                    }
+                }
             }
         }
     }
