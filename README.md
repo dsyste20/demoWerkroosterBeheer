@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  Work Roster Management System
+  Werkrooster Beheersysteem
   <br>
 </h1>
 
