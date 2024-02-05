@@ -44,7 +44,7 @@ Some configurations may be necessary depending on your specific setup:
 * Database Configuration: Ensure the Database.java file contains the correct connection details for your MySQL instance.
 * JavaFX Configuration: Make sure your IDE's run configuration includes the path to the JavaFX SDK libraries and includes the --module-path and --add-modules flags.
 
-### Usage Guide
+## Usage Guide
 * Sign in
   - Add a user in the database, to sign in.
 
