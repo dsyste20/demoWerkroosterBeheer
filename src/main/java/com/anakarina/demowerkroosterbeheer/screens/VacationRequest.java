@@ -164,7 +164,7 @@ public class VacationRequest {
         alert.showAndWait();
     }
 
-    private void updateRequestStatus(int requestId, String status, HBox requestRow) throws SQLException {
+    protected void updateRequestStatus(int requestId, String status, HBox requestRow) throws SQLException {
         Connection conn = database.getConnection();
         String sql = "UPDATE vakantieaanvragen SET status = ? WHERE id = ?";
         PreparedStatement stmt = conn.prepareStatement(sql);

@@ -89,7 +89,7 @@ public class Homescreen {
     }
 
     private HBox createButtonContainer() {
-        // Create buttons for generating roster and vacation requests
+        //create buttons for generating roster and vacation requests
         Button btnGenerateRoster = new Button("Rooster Genereren");
         btnGenerateRoster.setId("buttonRoster");
         btnGenerateRoster.setOnAction(event -> generateRoster(database));

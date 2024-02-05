@@ -75,7 +75,7 @@ public class SignIn extends Stage {
     public String getUserName() {
         return userName;
     }
-    private String authenticate(String username, String password) {
+    protected String authenticate(String username, String password) {
         //SQL query to check for the user with the provided username and password
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
 
