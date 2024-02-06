@@ -6,10 +6,14 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class Database {
-    private String sUser = "root";
-    private String sWachtwoord = "";
-    private String sHost = "localhost";
-    private String dbNaam = "werkrooster";
+//    private String sUser = "root";
+//    private String sWachtwoord = "";
+//    private String sHost = "localhost";
+//    private String dbNaam = "werkrooster";
+    private String sUser = "dbu2609337";
+    private String sWachtwoord = "Ana-karinaa0";
+    private String sHost = "rdbms.strato.de";
+    private String dbNaam = "dbs12557499";
     private Properties connectionProps;
 
     public Database() {
