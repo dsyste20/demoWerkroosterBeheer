@@ -12,7 +12,7 @@ public class Database {
 //    private String dbNaam = "werkrooster";
     private String sUser = "dbu2609337";
     private String sWachtwoord = "Ana-karinaa0";
-//    private String sHost = "rdbms.strato.de";
+    private String sHost = "rdbms.strato.de";
     private String dbNaam = "dbs12557499";
     private Properties connectionProps;
 
