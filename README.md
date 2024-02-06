@@ -69,7 +69,7 @@ Some configurations may be necessary depending on your specific setup:
 * Q3 2024: Introduce an automated backup system for the database.
 
 ### Contributing
-Contributions to the WerkroosterBeheer System are welcome. Please read the CONTRIBUTING.md file for guidelines on how to contribute.
+Contributions & Ideas to the WerkroosterBeheer System are welcome.
 
 ## License
 This project is made for Ad.
