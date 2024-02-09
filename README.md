@@ -32,9 +32,9 @@ WerkroosterBeheer System is a JavaFX application designed to manage work schedul
 * Install Java Development Kit (JDK): Download and install JDK 11 or newer from the official Oracle website.
 * Install MySQL Server: Download and install MySQL Server from the official MySQL website. Remember the root password you set during installation.
 * Install JavaFX SDK: Download JavaFX SDK from OpenJFX and unzip it to a known location on your computer (JavaFX 21 is already in the project, just unzip it)
-* Clone the Repository: Clone the WerkroosterBeheer System repository to your local machine using Git: git clone https://github.com/yourusername/werkroosterbeheersysteem.git
+* Clone the Repository: Clone the WerkroosterBeheer System repository to your local machine using Git: git clone [https://github.com/yourusername/werkroosterbeheersysteem.git](https://github.com/dsyste20/demoWerkroosterBeheer)
 * Database Setup: Log in to your MySQL server and create a new database named werkrooster.
-* Import the SQL schema provided in the db folder of the project.
+* Import the SQL schema provided in the folder of the project.
 * Configure the Database Connection: Open the Database.java file and update the database connection details (username, password, and URL) to match your MySQL server configuration.
 * Run the Application: Open the project in your IDE (e.g., IntelliJ IDEA, Eclipse) and configure the run configuration to include the JavaFX SDK as a module.
 * Run the HelloApplication.java file to start the application.
@@ -64,9 +64,10 @@ Some configurations may be necessary depending on your specific setup:
   - Click the red "afwijzen" button to reject the request.
 
 ## Roadmap / Timeline
-* Q1 2024: Implement feature for editing and deleting employee records.
-* Q2 2024: Add logic to make work schedules for other departments.
-* Q3 2024: Introduce an automated backup system for the database.
+* Q1 2024: Implement notifications.
+* Q2 2024: Implement feature for editing and deleting employee records.
+* Q3 2024: Add logic to make work schedules for other departments.
+* Q4 2024: Introduce an automated backup system for the database.
 
 ### Contributing
 Contributions & Ideas to the WerkroosterBeheer System are welcome.
