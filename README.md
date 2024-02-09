@@ -32,7 +32,7 @@ WerkroosterBeheer System is a JavaFX application designed to manage work schedul
 * Install Java Development Kit (JDK): Download and install JDK 11 or newer from the official Oracle website.
 * Install MySQL Server: Download and install MySQL Server from the official MySQL website. Remember the root password you set during installation.
 * Install JavaFX SDK: Download JavaFX SDK from OpenJFX and unzip it to a known location on your computer (JavaFX 21 is already in the project, just unzip it)
-* Clone the Repository: Clone the WerkroosterBeheer System repository to your local machine using Git: git clone [https://github.com/yourusername/werkroosterbeheersysteem.git](https://github.com/dsyste20/demoWerkroosterBeheer)
+* Clone the Repository: Clone the WerkroosterBeheer System repository to your local machine using Git: git clone https://github.com/dsyste20/demoWerkroosterBeheer.git
 * Database Setup: Log in to your MySQL server and create a new database named werkrooster.
 * Import the SQL schema provided in the folder of the project.
 * Configure the Database Connection: Open the Database.java file and update the database connection details (username, password, and URL) to match your MySQL server configuration.
